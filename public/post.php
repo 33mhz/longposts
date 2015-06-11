@@ -11,9 +11,10 @@ if ($longpost = $app->getPost($post_id,$params=array('include_annotations'=>1)))
 
             echo '
             
+            <div class="single-article">
+            
             <h2 class="title">'.$annotation['value']['title'].'</h2>
             <div class="body">'.$Parsedown->text($annotation['value']['body']).'</div>
-            <h4 class="tstamp">'.$annotation['value']['tstamp'].'</h4>
             
             <p>'.$longpost['num_replies'].' Replies, '.$longpost['num_reposts'].' Reposts, '.$longpost['num_stars'].' Stars</p>
             
@@ -40,6 +41,8 @@ if ($longpost = $app->getPost($post_id,$params=array('include_annotations'=>1)))
                     ';
                 }
             }
+            
+            echo '</div>';
         }
     }
     
