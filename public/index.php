@@ -54,18 +54,25 @@ if ($post_id !== 'longposts.net') {
                 // parse markdown
                 $body_preview = $Parsedown->text($body_preview.'…');
                 
+                // discussion indicator
+                if ($longpost['num_replies'] == '0') {
+                    $discussion = '';
+                } else {
+                    $discussion = ' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
+                }
+                
                 echo '
                 
                 <div class="article">
                     <div class="meta-top">
-                        <a class="author-name" href="'.$longpost['user']['canonical_url'].'" target="_blank"><img class="author-avatar" src="'.$longpost['user']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/></a>
-                        <p class="author-name"><a class="author-name" href="'.$longpost['user']['canonical_url'].'" target="_blank">'.$name.'</a></p>
+                        <img class="author-avatar" src="'.$longpost['user']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
+                        <a class="author-name" href="'.$longpost['user']['canonical_url'].'" target="_blank"><span class="author-name">'.$name.'</span></a>
                         <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>
                     </div>
                     <h2 class="title"><a href="'.URL.$longpost['id'].'">'.$annotation['value']['title'].'</a></h2>
                     <div class="body">'.$body_preview.'</div>
                     
-                    <div class="meta-bottom"><a href="'.URL.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span></div>
+                    <div class="meta-bottom"><a href="'.URL.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
                 </div>
                 
                 ';

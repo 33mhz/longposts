@@ -6,6 +6,18 @@ body {
     color:#222;
     background-color:#fff;
     font-family:"freight-text-pro",Georgia,Cambria,"Times New Roman",Times,serif;
+    padding-bottom:30px;
+}
+#footer {
+    position:fixed;
+    bottom:0;
+    right:0;
+    max-width:100%;
+    text-align:center;
+    padding:.2em;
+    background-color:#fff;
+    font-family:"jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+    font-size:80%;
 }
 a:link,a:visited {
     color:#683D81;
@@ -22,6 +34,7 @@ h2 {
 /* UI */
 #longposts,#longposts a {
     color:#000;
+    font-family:"jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
 }
 
 #navigation {
@@ -55,6 +68,25 @@ h2 {
 .author-permalink a:hover {
     color:#555;
 }
+#author-description {
+    height:0;
+    overflow:hidden;
+    font-size:80%;
+    color:#555;
+    font-family:sans-serif;
+    clear:both;
+}
+.author-open {
+    height:auto !important;
+    margin-top:1em;
+    padding:1em;
+    border-bottom:1px dotted orange;
+}
+#description-button {
+    float:left;
+    position:absolute;
+    margin-left:-20px;
+}
 
 .title a,.title {
     color:#111;
@@ -86,14 +118,25 @@ h2 {
 
 /* REPLIES */
 .reply {
-    padding-left:50px;
-    clear:left;
+    clear:both;
+    margin-bottom:2em;
+    border:1px solid #eee;
+    border-radius:2px;
+    box-shadow:1px 1px 2px #aaa;
+}
+.reply-author {
+    clear:both;
 }
 .reply-avatar {
-    margin-left:-50px;
-    float:left;
+    border-radius:3px;
+    width:45px;
+    height:45px;
+    margin-right:.5em;
 }
 .reply-username {
     font-weight:bold;
-    
+    vertical-align:top;
+}
+.reply-text {
+    padding-left:50px;
 }
