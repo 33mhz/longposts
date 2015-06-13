@@ -27,8 +27,8 @@ a:hover {
     text-decoration:none;
     color:#1F0032;
 }
-h2 {
-
+h1,h2,h3,h4,h5 {
+    font-family:sans-serif;
 }
 
 /* UI */
@@ -38,7 +38,16 @@ h2 {
 }
 
 #navigation {
-
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    height:1em;
+    background-color:#eee;
+    border-bottom:1px solid #ddd;
+}
+#content {
+    padding-top:3em;
 }
 
 /* LONGPOSTS */
@@ -68,7 +77,7 @@ h2 {
 .author-permalink a:hover {
     color:#555;
 }
-#author-description {
+.author-description {
     height:0;
     overflow:hidden;
     font-size:80%;
@@ -82,7 +91,7 @@ h2 {
     padding:1em;
     border-bottom:1px dotted orange;
 }
-#description-button {
+.author-toggle {
     float:left;
     position:absolute;
     margin-left:-20px;
@@ -92,7 +101,6 @@ h2 {
     color:#111;
     text-shadow:1px 1px 0 #ccc;
     clear:both;
-    font-family:sans-serif;
 }
 .body {
     

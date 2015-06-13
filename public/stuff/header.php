@@ -1,5 +1,11 @@
 <?php
 
+if ($page_title == 'Longposts') {
+    $heading = 'Longposts';
+} else {
+    $heading = 'Lp';
+}
+
 echo '<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
@@ -13,7 +19,9 @@ echo '<!DOCTYPE html>
 </head>
 <body>
 
-<h1 id="longposts"><a href="'.URL.'">Longposts</a></h1>
+<div id="navigation">
+    <h1 id="longposts"><a href="'.URL.'">'.$heading.'</a></h1>
+</div>
 
 <div id="content">';
 
