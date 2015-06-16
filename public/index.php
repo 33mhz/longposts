@@ -2,16 +2,32 @@
 
 require_once '../config.php';
 require_once '../AppDotNet.php';
+require_once '../EZAppDotNet.php';
 require_once '../functions.php';
-// try connecting to the ADN API
-if (!defined('API_ID') || !API_ID) {
-	throw new Exception('No ADN API ID specified');
+
+// checking if the 'Remember me' checkbox was clicked
+if (isset($_GET['rem'])) {
+	session_start();
+	if ($_GET['rem']=='1') {
+		$_SESSION['rem']=1;
+	} else {
+		unset($_SESSION['rem']);
+	}
+	header('Location: '.URL);
 }
-if (!defined('API_SECRET') || !API_SECRET) {
-	throw new Exception('No ADN API secret specified');
+
+$app = new EZAppDotNet();
+$login_url = $app->getAuthUrl();
+
+// if not logged in as user, use app for calls
+if (isset($_SESSION['logged_in'])) {
+    $app->getSession();
+    if (!isset($_SESSION['user'])) {
+        $_SESSION['user'] = $app->getUser();
+    }
+} else {
+    unset($_SESSION['user']);
 }
-$app = new AppDotNet(API_ID,API_SECRET);
-$token = $app->getAppAccessToken();
 
 // get post ID from URL
 $post_id = basename("https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");

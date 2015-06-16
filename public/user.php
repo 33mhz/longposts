@@ -6,7 +6,8 @@ if ($user = $app->getUser($post_id)) {
     require_once 'stuff/header.php';
     
     // search for posts
-    $longposts = $app->searchPosts($params = array('annotation_types'=>'net.jazzychad.adnblog.post','include_annotations'=>1,'creator_id'=>$user['id']), $query='', $order='default');
+    $longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','include_recent_message'=>1,'include_annotations'=>1,'is_public'=>1,'creator_id'=>$user['id']), $query='', $order='activity');
+    //$longposts = $app->searchPosts($params = array('annotation_types'=>'net.jazzychad.adnblog.post','include_annotations'=>1,'creator_id'=>$user['id']), $query='', $order='default');
     
     // User byline
     echo author($user);
@@ -16,8 +17,8 @@ if ($user = $app->getUser($post_id)) {
         longpost_preview($longpost,0);
     }
     
-    if (count($longposts) == 0) {
-        echo '<p>This user has not made any Longposts.</p>';
+    if (!$longposts) {
+        echo '<p>This user has not published any Longposts.</p>';
     }
     
 } else {

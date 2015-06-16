@@ -6,7 +6,7 @@
 
 <script>
 $(document).ready(function() {
-    $(".author-tstamp").each(function(i) {
+    $(".tstamp").each(function(i) {
         this.innerHTML = moment(this.innerHTML).fromNow();
     });
 });

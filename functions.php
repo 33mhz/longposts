@@ -19,22 +19,22 @@ function author($user) {
 }
 
 function brief_author($longpost) {
-    if (isset($longpost['user']['name'])) {
-        $name = $longpost['user']['name'];
+    if (isset($longpost['owner']['name'])) {
+        $name = $longpost['owner']['name'];
     } else {
-        $name = '@'.$longpost['user']['username'];
+        $name = '@'.$longpost['owner']['username'];
     }
     
     echo '
     <div class="meta-top">
         <p class="author-toggle"><a class="author-button" href="javascript:toggle_description(\''.$longpost['id'].'\')"><i class="fa fa-chevron-circle-down"></i></a></p>
-        <a href="'.URL.'@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
+        <a href="'.URL.'@'.$longpost['owner']['username'].'"><img class="author-avatar" src="'.$longpost['owner']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['owner']['username'].'"/>
         <span class="author-name">'.$name.'</span></a>
-        <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>
+        <p class="author-permalink" title="'.$longpost['recent_message']['created_at'].'"><a class="author-tstamp tstamp" href="'.URL.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>
         
         <div class="author-description">
-            '.$longpost['user']['description']['html'].'
-            <p><a class="author-name" href="'.$longpost['user']['canonical_url'].'" target="_blank">@'.$longpost['user']['username'].' on App.net <i class="fa fa-external-link"></i></a></p>
+            '.$longpost['owner']['description']['html'].'
+            <p><a class="author-name" href="'.$longpost['owner']['canonical_url'].'" target="_blank">@'.$longpost['owner']['username'].' on App.net <i class="fa fa-external-link"></i></a></p>
         </div>
     </div>
     ';
@@ -42,54 +42,60 @@ function brief_author($longpost) {
 
 function longpost_preview($longpost,$include_author) {
     // Markdown parser
-    require_once 'stuff/Parsedown.php';
+    require_once 'public/stuff/Parsedown.php';
     $Parsedown = new Parsedown();
     
-    $is_longpost = false;
-    foreach ($longpost['annotations'] as $annotation) {
-        if ($annotation['type'] == 'net.jazzychad.adnblog.post' && isset($annotation['value']['title']) && !empty($annotation['value']['title'])) {
-            // Make a random guess at reading speed and don't even consider wordage
-            $body_by_word = preg_split('/\s+/', $annotation['value']['body']);
-            $readingTime = ceil(count($body_by_word) / 175);
-            
-            // Cut previews after a handful of words
-            $body_preview = '';
-            $preview_word_count = min(count($body_by_word),70)-1;
-            for ($n = 0; $n < $preview_word_count; $n++) {
-                $body_preview .= ' '.$body_by_word[$n];
-            }
-            
-            // parse markdown
-            $body_preview = $Parsedown->text($body_preview.'&#8230;');
-            
-            // discussion indicator
-            if ($longpost['num_replies'] == '0') {
-                $discussion = '';
-            } else {
-                $discussion = ' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
-            }
-            
-            echo '
-            
-            <div class="article" id="post-'.$longpost['id'].'">
-                ';
-                if ($include_author) {
-                    echo brief_author($longpost);
-                }
-                echo '
-                
-                <h2 class="title"><a href="'.URL.$longpost['id'].'">'.$annotation['value']['title'].'</a></h2>';
-                if (!$include_author) {
-                    echo '<p class="author-permalink"><a class="author-tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>';
-                }
-                echo '<div class="body">'.$body_preview.'</div>
-                
-                <div class="meta-bottom"><a href="'.URL.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
-            </div>
-            
-            ';
+    // Make a random guess at reading speed and don't even consider wordage
+    $body_by_word = preg_split('/\s+/', $longpost['recent_message']['annotations'][0]['value']['body']);
+    $readingTime = ceil(count($body_by_word) / 175);
+    
+    // Cut previews after a handful of words
+    if (isset($longpost['recent_message']['html']) && !empty($longpost['recent_message']['html'])) {
+        $body_preview = $longpost['recent_message']['html'];
+    } else {
+        $body_preview = '';
+        $preview_word_count = min(count($body_by_word),70)-1;
+        for ($n = 0; $n < $preview_word_count; $n++) {
+            $body_preview .= ' '.$body_by_word[$n];
         }
+        
+        // parse markdown
+        $body_preview = $Parsedown->text($body_preview.'&#8230;');
     }
+    
+    // retrieve global post
+    if (isset($longpost['annotations'][0]['value']['reply_post_id'])) {
+        $global_post = $app->getPost($longpost['annotations'][0]['value']['reply_post_id']);
+        
+        // discussion indicator
+        if ($global_post['num_replies'] == '0') {
+            $discussion = '';
+        } else {
+            $discussion = ' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
+        }
+    } else {
+        $discussion = '';
+    }
+    
+    echo '
+    
+    <div class="article" id="post-'.$longpost['id'].'">
+        ';
+        if ($include_author) {
+            echo brief_author($longpost);
+        }
+        echo '
+        
+        <h2 class="title"><a href="'.URL.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h2>';
+        if (!$include_author) {
+            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="'.URL.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>';
+        }
+        echo '<div class="body">'.$body_preview.'</div>
+        
+        <div class="meta-bottom"><a href="'.URL.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+    </div>
+    
+    ';
 }
 
 ?>
