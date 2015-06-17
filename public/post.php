@@ -40,9 +40,11 @@ if ($longpost = $app->getChannel($post_id,$params=array('include_annotations'=>1
                 echo '<p class="last-edit" style="float:right;font-size:80%;font-family:sans-serif;color:#888">Last Edited <span class="tstamp">'.$longpost['recent_message']['created_at'].'</span></p>';
             }
         }
-        echo '
         
-        <p><strong>Tags</strong> ';
+        echo '<p style="float:right;font-size:80%;color:#888"><i class="fa fa-archive"></i> Filed Under: '.$longpost['annotations'][0]['value']['category'].'</p>
+        
+        
+        <p><strong><i class="fa fa-tags"></i></strong> ';
         
         foreach ($longpost['recent_message']['entities']['hashtags'] as $tag) {
             echo '<a href="https://alpha.app.net/hashtags/'.$tag['name'].'">#'.$tag['name'].'</a> ';

@@ -33,7 +33,7 @@ echo '
     if (!isset($_SESSION['logged_in'])) {
         echo '<a href="'.$login_url.'">Log in</a>';
     } else {
-        echo '<a href="'.URL.'@'.$_SESSION['user']['username'].'">Your Posts</a> <a href="'.URL.'drafts">Drafts</a> <a href="'.URL.'drafts/write">Write</a> <a href="'.URL.'logout">Log out</a>';
+        echo '<a href="'.URL.'@'.$_SESSION['user']['username'].'">@'.$_SESSION['user']['username'].'</a> <a href="'.URL.'drafts">Drafts</a> <a href="'.URL.'drafts/write">Write</a> <a href="'.URL.'logout">Log out</a>';
     }
     echo '</div>
 

@@ -66,9 +66,9 @@ if (isset($_GET['id'])) {
     
     <?php echo $broadcast;
     if (isset($channel)) { ?>
-    <p><button type="button" name="submit" value="update" onclick="save_form(1)">Save Draft</button> <?php if (!$is_published) { echo '<button type="button" name="submit" value="publish" onclick="save_form(2)">Publish</button> '; } else { echo '<button type="button" name="submit" value="unpublish" onclick="save_form(3)">Un-publish</button>'; } ?> <button type="button" name="submit" value="delete" onclick="save_form(4)">DELETE</button></p>
+    <p><button type="button" name="submit" value="update" onclick="save_form(1)">Save Private</button> <?php if (!$is_published) { echo '<button type="button" name="submit" value="publish" onclick="save_form(2)">Publish</button> '; } else { echo '<button type="button" name="submit" value="unpublish" onclick="save_form(3)">Un-publish</button>'; } ?> <button type="button" name="submit" value="delete" onclick="save_form(4)">DELETE</button></p>
     <? } else { ?>
-    <p><button type="button" name="submit" value="save" onclick="save_form(5)">Save Draft</button> <button type="button" name="submit" value="publish" onclick="save_form(6)">Publish</button></p>
+    <p><button type="button" name="submit" value="save" onclick="save_form(5)">Save Private</button> <button type="button" name="submit" value="publish" onclick="save_form(6)">Publish</button></p>
     <?php } ?>
     </form>
 </div>
@@ -104,6 +104,9 @@ function save_form(which) {
     var title = $('#title').val();
     var body = editor.codemirror.getValue();
     var description = $('#description').val();
+    if (description == '') {
+        description = body.substring(0,256);
+    }
     var category = $('#category').val();
     
     // Variable to hold request

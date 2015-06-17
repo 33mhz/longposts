@@ -26,6 +26,8 @@ if (isset($_SESSION['logged_in'])) {
         $_SESSION['user'] = $app->getUser();
     }
 } else {
+    $app = new AppDotNet(API_ID,API_SECRET);
+    $token = $app->getAppAccessToken();
     unset($_SESSION['user']);
 }
 

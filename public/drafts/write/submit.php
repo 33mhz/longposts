@@ -53,8 +53,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                         'category' => $category
                     )
                 )
-            ),
-            'include_annotations' => 1
+            )
         );
     }
     
@@ -67,7 +66,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
             // create message
             $app->createMessage(
                 $channel_id,
-                array(
+                $thisdata = array(
                     'text' => $description,
                     'annotations' => array(
                         array(
@@ -105,7 +104,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                 // create message
                 $app->createMessage(
                     $channel_id,
-                    array(
+                    $thisdata = array(
                         'text' => $description,
                         'annotations' => array(
                             array(
@@ -125,7 +124,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                 // create message
                 $app->createMessage(
                     $channel_id,
-                    array(
+                    $thisdata = array(
                         'text' => $description,
                         'annotations' => array(
                             array(
@@ -149,7 +148,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
             // create message
             if ($message = $app->createMessage(
                 $channel_id,
-                $data = array(
+                $thisdata = array(
                     'text' => $description,
                     'annotations' => array(
                         array(
