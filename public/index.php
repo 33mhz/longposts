@@ -33,15 +33,20 @@ if (isset($_SESSION['logged_in'])) {
 
 // get post ID from URL
 $post_id = basename("https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+$url = $_SERVER['REQUEST_URI'];
+$page_key = explode('/',$url);
 
 // what page are we viewing?
-if ($post_id !== 'longposts.net') {
-    if (is_numeric($post_id)) {
+if (!empty($page_key[1])) {
+    if (is_numeric($page_key[1])) {
         // display post
         require_once 'post.php';
-    } else if (substr($post_id,0,1) == '@') {
+    } else if (substr($page_key[1],0,1) == '@') {
         // display a user's posts
         require_once 'user.php';
+    } else if ($page_key[1] == 'category') {
+        // category
+        require_once 'category.php';
     }
 } else {
     // display frontpage

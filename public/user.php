@@ -1,8 +1,8 @@
 ﻿<?php
 
 // if user found
-if ($user = $app->getUser($post_id)) {
-    $page_title = 'Longposts by '.$post_id;
+if ($user = $app->getUser($page_key[1])) {
+    $page_title = 'Longposts by '.$page_key[1];
     require_once 'stuff/header.php';
     
     // search for posts

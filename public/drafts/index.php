@@ -22,7 +22,9 @@ $login_url = $app->getAuthUrl();
 // if not logged in as user, use app for calls
 if (isset($_SESSION['logged_in'])) {
     $app->getSession();
-    $_SESSION['user'] = $app->getUser();
+    if (!isset($_SESSION['user'])) {
+        $_SESSION['user'] = $app->getUser();
+    }
 } else {
     unset($_SESSION['user']);
 }

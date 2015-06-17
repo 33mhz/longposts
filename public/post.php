@@ -1,6 +1,6 @@
 ﻿<?php
 
-if ($longpost = $app->getChannel($post_id,$params=array('include_annotations'=>1,'include_recent_message'=>1))) {
+if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations'=>1,'include_recent_message'=>1))) {
     // Markdown parser
     require_once 'stuff/Parsedown.php';
     $Parsedown = new Parsedown();
@@ -13,7 +13,7 @@ if ($longpost = $app->getChannel($post_id,$params=array('include_annotations'=>1
             $global_post = $app->getPost($longpost['annotations'][0]['value']['global_post_id']);
         }
 
-        $page_title = $longpost['annotations'][0]['value']['title'].' · LP';
+        $page_title = $longpost['annotations'][0]['value']['title'].' · Lp';
         $title = $longpost['annotations'][0]['value']['title'];
         $body = $longpost['recent_message']['annotations'][0]['value']['body'];
         require_once 'stuff/header.php';
@@ -41,7 +41,7 @@ if ($longpost = $app->getChannel($post_id,$params=array('include_annotations'=>1
             }
         }
         
-        echo '<p style="float:right;font-size:80%;color:#888"><i class="fa fa-archive"></i> Filed Under: '.$longpost['annotations'][0]['value']['category'].'</p>
+        echo '<p style="float:right;font-size:80%;color:#888"><i class="fa fa-archive"></i> Filed Under: <a href="'.URL.'category/'.$longpost['annotations'][0]['value']['category'].'">"'.$longpost['annotations'][0]['value']['category'].'"</a></p>
         
         
         <p><strong><i class="fa fa-tags"></i></strong> ';
@@ -95,7 +95,7 @@ if ($longpost = $app->getChannel($post_id,$params=array('include_annotations'=>1
     $page_title = 'Long Posts';
     require_once 'stuff/header.php';
     
-    echo 'Could not retrieve post '.$post_id;
+    echo 'Could not retrieve post '.$page_key[2];
 }
 
 require_once 'stuff/footer.php';
