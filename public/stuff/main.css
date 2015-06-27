@@ -32,31 +32,33 @@ h1,h2,h3,h4,h5 {
 }
 
 /* feedback */
-.notice-positive,.notice-negative {
+.positive-notice,.negative-notice {
     border-radius:3px;
     padding:.2em;
 }
-.notice-positive {
+.positive-notice {
     border:1px dotted green;
 }
-.notice-positive .fa-check-square-o {
+.positive-notice .fa-check-square-o {
     color:green;
 }
-.notice-negative {
+.negative-notice {
     border:1px dotted red;
 }
-.notice-negative .fa-times {
+.negative-notice .fa-times {
     color:red;
 }
 
 /* UI */
 #longposts,#longposts a {
+    margin-left:1%;
     color:#000;
     font-family:"jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+    position:relative;
 }
 
 #navigation {
-    position:fixed;
+    position:absolute;
     top:0;
     left:0;
     right:0;
@@ -64,8 +66,13 @@ h1,h2,h3,h4,h5 {
     background-color:#eee;
     border-bottom:1px solid #ddd;
 }
+@media all and (min-width: 1400px) {
+    #navigation {
+        position:fixed;
+    }
+}
 #content {
-    padding-top:3em;
+    padding-top:5em;
 }
 
 /* LONGPOSTS */

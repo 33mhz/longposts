@@ -223,7 +223,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
         // create broadcast post to global
         // allow custom post!
         if ($broadcast_post = $app->createPost(
-            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.') #longPost',
+            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.') #longpost',
             $thisdata = array(
                 'annotations' => array(
                     array(
@@ -247,14 +247,10 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
             $channel_data['annotations'] = $last_update;
             $channel_data['annotations'][0]['value']['global_post_id'] = $broadcast_post['id'];
             
-            print_r($channel_data);
-            echo '-------------------------------------------------------------------------------';
-            //echo $data['annotations'][0]['value']['global_post_id'];
-            
             // update channel to reflect the broadcast post
             if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
-                $_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="http://treeview.us/home/'.$broadcast_post['id'].'" target="_blank">to Global</a>.';
-                $returns = array('notice'=>'Broadcasted post <a href="http://treeview.us/home/'.$broadcast_post['id'].'" target="_blank">to Global</a>.','status'=>1,'redirect'=>URL.$channel_id);
+                $_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="http://treeview.us/home/thread/'.$broadcast_post['id'].'" target="_blank">to Global</a>.';
+                $returns = array('notice'=>'Broadcasted post <a href="http://treeview.us/home/thread/'.$broadcast_post['id'].'" target="_blank">to Global</a>.','status'=>1,'redirect'=>URL.$channel_id);
             } else {
                 $_SESSION['NEG_NOTICE'][] = 'Error broadcasting to Global.';
                 $returns = array('notice'=>'Error broadcasting to Global.','status'=>0,'redirect'=>URL.$channel_id);
@@ -268,7 +264,6 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
     
 } else {
     //header('Location: '.URL.'drafts');
-    echo 'no title/body';
 }
 
 

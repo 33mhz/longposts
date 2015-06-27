@@ -110,14 +110,6 @@ function save_form(which) {
         description = body.substring(0,256);
     }
     var category = $('#category').val();
-    
-    // Variable to hold request
-    /*var request;
-
-    // Abort any pending request
-    if (request) {
-        request.abort();
-    }*/
 
     if (body.length > 0 && body.length < 8001 && description.length < 257 && title.length > 0 && title.length < 65) {
         // Fire off the request to /form.php
@@ -127,7 +119,6 @@ function save_form(which) {
             data: {'title':title,'body':body,'description':description,'category':category,'type':type,'broadcast':broadcast<?php if (isset($channel)) { echo ',\'channel_id\':\''.$channel['id'].'\''; } ?>},
             dataType: 'json',
             success: function(r) {
-                console.log('worked');
                 console.log(r);
                 if (r.status == 1) {
                     $('#notices').html('<p class="positive-notice">'+r.notice+'</p>');
@@ -143,37 +134,6 @@ function save_form(which) {
     } else {
         console.log('does not meet requirements');
     }
-    /*request = $.ajax({
-        url: "<?php echo URL; ?>drafts/write/submit.php",
-        type: "post",
-        data: {'title':title,'body':body,'description':description,'category':category,'type':type<?php if (isset($channel)) { echo ',\'channel_id\':\''.$channel['id'].'\''; } ?>}
-    });
-
-    // Callback handler that will be called on success
-    request.done(function (response){
-        // Log a message to the console
-        console.log(response);
-        console.log("Hooray, it worked!");
-    });
-
-    // Callback handler that will be called on failure
-    request.fail(function (jqXHR, textStatus, errorThrown){
-        // Log the error to the console
-        console.error(
-            "The following error occurred: "+
-            textStatus, errorThrown
-        );
-    });
-
-    // Callback handler that will be called regardless
-    // if the request failed or succeeded
-    request.always(function () {
-        // Reenable the inputs
-        //$inputs.prop("disabled", false);
-    });*/
-
-    // Prevent default posting of form
-    //event.preventDefault();
 }
 </script>
 <?
