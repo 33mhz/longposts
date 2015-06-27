@@ -1,7 +1,7 @@
-<?php
+﻿<?php
 
 if (isset($page_key[2])) {
-    $page_title = 'Lp � Category '.$key;
+    $page_title = 'Lp · Category '.$page_key[2];
     require_once 'stuff/header.php';
 
     // get drafts

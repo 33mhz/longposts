@@ -32,6 +32,10 @@ if (isset($_SESSION['logged_in'])) {
 $page_title = 'Lp · Drafts';
 require_once '../stuff/header.php';
 
+// Markdown parser
+require_once '../stuff/Parsedown.php';
+$Parsedown = new Parsedown();
+
 // get drafts
 $longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','creator_id'=>$_SESSION['user']['id'],'is_private'=>1,'include_recent_message'=>1,'include_annotations'=>1), $query='', $order='id');
 
@@ -43,8 +47,8 @@ foreach($longposts as $longpost) {
     
     <div id="post-'.$longpost['id'].'" class="article">
         <a href="'.URL.'drafts/write?id='.$longpost['id'].'" style="float:right"><button type="button">Edit</button></a>
-        <h3><a href="'.URL.'@'.$_SESSION['user']['username'].'/'.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h3>
-        <p>'.$longpost['recent_message']['html'].'</p>
+        <h3><a href="'.URL.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h3>
+        <p>'.$Parsedown->text($longpost['recent_message']['html']).'</p>
     </div>
     
     ';

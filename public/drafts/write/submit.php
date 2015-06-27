@@ -79,10 +79,12 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                 )
             );
             
-            // Go back to drafts
-            //header('Location: '.URL.'drafts');
+            // Go to new post
+            $_SESSION['POS_NOTICE'][] = 'Created new post!';
+            $returns = array('notice'=>'Created new post.','status'=>1,'redirect'=>URL.$channel_id);
         } else {
-            //header('Location: '.URL.'drafts/write');
+            $_SESSION['NEG_NOTICE'][] = "Error creating post.";
+            $returns = array('notice'=>'Error creating post.','status'=>0,'redirect'=>URL.'drafts/write');
         }
     }
     // publish
@@ -116,6 +118,12 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                         )
                     )
                 );
+                
+                $_SESSION['POS_NOTICE'][] = 'Created new post.';
+                $returns = array('notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id);
+            } else {
+                $_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
+                $returns = array('notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id);
             }
         }
         // publish draft
@@ -137,7 +145,11 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                     )
                 );
                 
-                //header('Location: '.URL.$channel_id);
+                $_SESSION['POS_NOTICE'][] = 'Created new post.';
+                $returns = array('notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id);
+            } else {
+                $_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
+                $returns = array('notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id);
             }
         }
     }
@@ -163,10 +175,11 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
                 
             }
             
-            // Go back to drafts
-            //header('Location: '.URL.$channel_id);
+            $_SESSION['POS_NOTICE'][] = 'Updated draft.';
+            $returns = array('notice'=>'Updated draft.','status'=>1,'redirect'=>URL.$channel_id);
         } else {
-            //header('Location: '.URL.'drafts/write/?id='.$channel_id);
+            $_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
+            $returns = array('notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id);
         }
     }
     // make private
@@ -181,20 +194,28 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
         
         // update channel
         if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
-            //header('Location: '.URL);
+            $_SESSION['POS_NOTICE'][] = 'Made post private.';
+            $returns = array('notice'=>'Made post private.','status'=>1,'redirect'=>URL.$channel_id);
         } else {
-            
+            $_SESSION['NEG_NOTICE'][] = 'Error making post private.';
+            $returns = array('notice'=>'Error making post private.','status'=>0,'redirect'=>URL.$channel_id);
         }
     }
     // delete post!
     else if ($_POST['type'] == 'delete') {
         // delete Global post if exists
         if (isset($channel_data['annotations'][0]['value']['global_post_id'])) {
-            
+            $app->deletePost($channel_data['annotations'][0]['value']['global_post_id']);
         }
         
         // deactivate channel
-        $app->deleteChannel($channel_id);
+        if ($app->deleteChannel($channel_id)) {
+            $_SESSION['POS_NOTICE'][] = 'Deleted post.';
+            $returns = array('notice'=>'Deleted post.','status'=>1,'redirect'=>URL.'drafts');
+        } else {
+            $_SESSION['NEG_NOTICE'][] = 'Couldn\'t delete!';
+            $returns = array('notice'=>'Couldn\'t delete!','status'=>0,'redirect'=>URL.$channel_id);
+        }
     }
     
     // Handle broadcasting
@@ -202,7 +223,7 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
         // create broadcast post to global
         // allow custom post!
         if ($broadcast_post = $app->createPost(
-            $text='Published ['.$_POST['title'].'](https://longposts.net/'.$channel_id.')',
+            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.') #longPost',
             $thisdata = array(
                 'annotations' => array(
                     array(
@@ -232,13 +253,18 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
             
             // update channel to reflect the broadcast post
             if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
-                
+                $_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="http://treeview.us/home/'.$broadcast_post['id'].'" target="_blank">to Global</a>.';
+                $returns = array('notice'=>'Broadcasted post <a href="http://treeview.us/home/'.$broadcast_post['id'].'" target="_blank">to Global</a>.','status'=>1,'redirect'=>URL.$channel_id);
+            } else {
+                $_SESSION['NEG_NOTICE'][] = 'Error broadcasting to Global.';
+                $returns = array('notice'=>'Error broadcasting to Global.','status'=>0,'redirect'=>URL.$channel_id);
             }
         }
-        
-        // Go to published post
-        //header('Location: '.URL.$channel_id);
-    }   
+    }
+    
+    // Go to published post
+    //header('Location: '.URL.$channel_id);
+    echo json_encode($returns);
     
 } else {
     //header('Location: '.URL.'drafts');

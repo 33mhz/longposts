@@ -9,7 +9,10 @@ require_once 'stuff/header.php';
 // search for channels
 $longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','include_recent_message'=>1,'include_annotations'=>1,'is_public'=>1), $query='', $order='activity');
 
-krsort($longposts);
+function sortByOrder($a, $b) {
+    return $b['id'] - $a['id'];
+}
+usort($longposts, "sortByOrder");
 
 foreach ($longposts as $longpost) {
     longpost_preview($longpost,1);

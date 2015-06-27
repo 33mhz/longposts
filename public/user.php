@@ -9,6 +9,11 @@ if ($user = $app->getUser($page_key[1])) {
     $longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','include_recent_message'=>1,'include_annotations'=>1,'is_public'=>1,'creator_id'=>$user['id']), $query='', $order='activity');
     //$longposts = $app->searchPosts($params = array('annotation_types'=>'net.jazzychad.adnblog.post','include_annotations'=>1,'creator_id'=>$user['id']), $query='', $order='default');
     
+    function sortByOrder($a, $b) {
+        return $b['id'] - $a['id'];
+    }
+    usort($longposts, "sortByOrder");
+    
     // User byline
     echo author($user);
     

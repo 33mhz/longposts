@@ -31,6 +31,24 @@ h1,h2,h3,h4,h5 {
     font-family:sans-serif;
 }
 
+/* feedback */
+.notice-positive,.notice-negative {
+    border-radius:3px;
+    padding:.2em;
+}
+.notice-positive {
+    border:1px dotted green;
+}
+.notice-positive .fa-check-square-o {
+    color:green;
+}
+.notice-negative {
+    border:1px dotted red;
+}
+.notice-negative .fa-times {
+    color:red;
+}
+
 /* UI */
 #longposts,#longposts a {
     color:#000;

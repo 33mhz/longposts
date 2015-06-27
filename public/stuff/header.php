@@ -13,7 +13,7 @@ echo '<!DOCTYPE html>
 <title>'.$page_title.'</title>
 <!--<link id="siteicon" rel="icon" href="../icon.png"/>-->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<link href="'.URL.'stuff/main.css" rel="stylesheet"/>
+<link href="'.URL.'stuff/main.min.css" rel="stylesheet"/>
 <script src="'.URL.'stuff/jquery2.1.4.js"></script>
 <script src="'.URL.'stuff/moment.js"></script>
 ';
@@ -40,6 +40,22 @@ echo '
     <h1 id="longposts"><a href="'.URL.'">'.$heading.'</a></h1>
 </div>
 
-<div id="content">';
+<div id="content">
+
+<div id="statuses">
+    ';
+    if (isset($_SESSION['POS_NOTICE'][0])) {
+        foreach ($_SESSION['POS_NOTICE'] as $notice) {
+            echo '<p class="positive-notice"><i class="fa fa-check-square-o"></i> '.$notice.'</p>';
+        }
+        unset($_SESSION['POS_NOTICE']);
+    }
+    if (isset($_SESSION['NEG_NOTICE'][0])) {
+        foreach ($_SESSION['NEG_NOTICE'] as $notice) {
+            echo '<p class="negative-notice"><i class="fa fa-times"></i> '.$notice.'</p>';
+        }
+        unset($_SESSION['NEG_NOTICE']);
+    }
+echo '</div>';
 
 ?>

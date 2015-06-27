@@ -68,9 +68,9 @@ if (isset($_GET['id'])) {
     
     <?php echo $broadcast;
     if (isset($channel)) { ?>
-    <p><button type="button" name="submit" value="update" onclick="save_form(1)">Save Private</button> <?php if (!$is_published) { echo '<button type="button" name="submit" value="publish" onclick="save_form(2)">Publish</button> '; } else { echo '<button type="button" name="submit" value="unpublish" onclick="save_form(3)">Un-publish</button>'; } ?> <button type="button" name="submit" value="delete" onclick="save_form(4)">DELETE</button></p>
+    <p><button type="button" name="submit" value="update" onclick="save_form(1)">Save</button> <?php if (!$is_published) { echo '<button type="button" name="submit" value="publish" onclick="save_form(2)">Publish</button> '; } else { echo '<button type="button" name="submit" value="unpublish" onclick="save_form(3)">Un-publish</button>'; } ?> <button type="button" name="submit" value="delete" onclick="save_form(4)">DELETE</button></p>
     <? } else { ?>
-    <p><button type="button" name="submit" value="save" onclick="save_form(5)">Save Private</button> <button type="button" name="submit" value="publish" onclick="save_form(6)">Publish</button></p>
+    <p><button type="button" name="submit" value="save" onclick="save_form(5)">Save</button> <button type="button" name="submit" value="publish" onclick="save_form(6)">Publish</button></p>
     <?php } ?>
     </form>
 </div>
@@ -129,6 +129,12 @@ function save_form(which) {
             success: function(r) {
                 console.log('worked');
                 console.log(r);
+                if (r.status == 1) {
+                    $('#notices').html('<p class="positive-notice">'+r.notice+'</p>');
+                    window.location = r.redirect;
+                } else {
+                    $('#notices').html('<p class="negative-notice">'+r.notice+'</p>');
+                }
             },
             error: function(r) {
                 console.log(r);
