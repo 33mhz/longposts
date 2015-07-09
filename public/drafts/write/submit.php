@@ -192,6 +192,13 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
             'user_ids' => array()
         );
         
+        // delete Global post if exists
+        if (isset($channel_data['annotations'][0]['value']['global_post_id'])) {
+            $app->deletePost($channel_data['annotations'][0]['value']['global_post_id']);
+            
+            $channel_data['annotations'][0]['value']['global_post_id'] = '';
+        }
+        
         // update channel
         if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
             $_SESSION['POS_NOTICE'][] = 'Made post private.';
@@ -220,10 +227,17 @@ if (isset($_POST['body']) && isset($_POST['title'])) {
     
     // Handle broadcasting
     if (isset($_POST['broadcast']) && $_POST['broadcast'] == 1 && ($_POST['type'] == 'update' || $_POST['type'] == 'publish')) {
+        if (isset($_POST['description']) && !empty($_POST['description'])) {
+            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.')
+'.$_POST['description'].'
+#longpost';
+        } else {
+            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.') #longpost';
+        }
         // create broadcast post to global
         // allow custom post!
         if ($broadcast_post = $app->createPost(
-            $text='['.$_POST['title'].'](https://longposts.net/'.$channel_id.') #longpost',
+            $text,
             $thisdata = array(
                 'annotations' => array(
                     array(

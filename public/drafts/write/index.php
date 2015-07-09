@@ -42,7 +42,7 @@ if (isset($_GET['id'])) {
     } else {
         $category = '';
     }
-    if (isset($channel['annotations'][0]['value']['global_post_id'])) {
+    if (isset($channel['annotations'][0]['value']['global_post_id']) && !empty($channel['annotations'][0]['value']['global_post_id'])) {
         $broadcast = '';
     } else {
         $broadcast = ' <p><label><input type="checkbox" class="broadcast" name="broadcast" checked/> Broadcast Post to Global (and allow replies)</label></p>';
@@ -98,7 +98,7 @@ function save_form(which) {
         var type = 'publish';
     }
     
-    if ($('.broadcast')[0].checked == true) {
+    if (typeof $('.broadcast')[0] !== 'undefined' && $('.broadcast')[0].checked == true) {
         var broadcast = 1;
     } else {
         var broadcast = 0;
