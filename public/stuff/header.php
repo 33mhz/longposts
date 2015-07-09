@@ -1,5 +1,7 @@
 <?php
 
+$_SESSION['last_url'] = $_SERVER['REQUEST_URI'];
+
 if ($page_title == 'Longposts') {
     $heading = 'Longposts';
 } else {

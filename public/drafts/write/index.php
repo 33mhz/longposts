@@ -62,7 +62,7 @@ if (isset($_GET['id'])) {
     <input class="title" type="text" id="title" name="post_title" placeholder="Title" value="<?php echo $title; ?>" required/>
     <textarea id="editor" name="post_body" placeholder="Content here ...." maxlength="8000"><?php echo $body; ?></textarea>
     
-    <p><textarea name="post_description" id="description" placeholder="Optional description/subheading" maxlength="256" style="width:100%"><?php echo $description; ?></textarea></p>
+    <p><textarea name="post_description" id="description" placeholder="Optional description/subheading" maxlength="245" style="width:100%"><?php echo $description; ?></textarea></p>
     
     <p>Category: <input type="text" id="category" name="category" placeholder="Optional" value="<?php echo $category; ?>" /></p>
     

@@ -15,5 +15,5 @@ if (isset($_SESSION['rem'])) {
 	$token = $app->setSession();
 }
 // redirect user after logging in
-header('Location: '.URL);
+header('Location: '.URL.substr($_SESSION['last_url'],1));
 ?>

@@ -8,5 +8,5 @@ unset($_SESSION['logged_in']);
 $app->deleteSession();
 
 // redirect user after logging out
-header('Location: '.URL);
+header('Location: '.URL.substr($_SESSION['last_url'],1));
 ?>

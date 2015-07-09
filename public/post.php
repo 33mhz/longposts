@@ -81,6 +81,29 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
                     ';
                 }
             }
+            
+            if (isset($_SESSION['logged_in'])) {
+            echo '
+            
+            <div>
+                <form action="reply.php" method="POST">
+                <p><textarea style="width:100%" name="reply_text" maxlength="256" autofocus>@'.$longpost['recent_message']['user']['username'].' </textarea></p>
+                
+                <p><button type="submit">Reply</button></p>
+                
+                <input type="hidden" name="global_post_id" value="'.$global_post['id'].'"/>
+                <input type="hidden" name="longpost_id" value="'.$longpost['id'].'"/>
+                </form>
+            </div>
+            
+            ';
+            } else {
+                echo '
+                
+                <p><a href="'.$login_url.'">Log in</a> to comment.</p>
+                
+                ';
+            }
         }
         echo '</div>';
     }
