@@ -1,0 +1,16 @@
+<?php
+
+// API
+define('API_ID', 'XXX');
+define('API_SECRET', 'XXX');
+define('TOKEN', 'XXX');
+
+// DB
+define('DBUSER', 'username');
+define('DBPASS', 'password');
+define('DBHOST', 'mysql:host=localhost;dbname=longposts');
+
+// Base URL
+define('URL', 'https://example.com/');
+
+?>
