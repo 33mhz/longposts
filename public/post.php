@@ -22,42 +22,44 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
         // Connect to db
         $db = new PDO(DBHOST, DBUSER, DBPASS);
         
+        // get view count
         $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$longpost['id']);
         $sth->execute();
         $views = $sth->fetch()[0];
         $ip = str_replace(array('.'), '', getIp());
         
-        if (isset($_SESSION['logged_in'])) {
-            $user_id = $_SESSION['user']['id'];
-            $str = "SELECT * FROM views WHERE post_id = ".$longpost['id']." AND user_id = ".$user_id;
-        } else {
-            $user_id = Null;
-            $str = "SELECT * FROM views WHERE post_id = ".$longpost['id']." AND ip = ".$ip;
-        }
-
+        $this_user_viewed = false;
+        
         // tick database for another view
         if ($views > 0) {
-            // if there are views, check if this user has viewed, by username, then IP
-            $sth = $db->prepare($str);
+            // get visits from this IP
+            $sth = $db->prepare("SELECT * FROM views WHERE post_id = ".$longpost['id']." AND ip = ".$ip);
             $sth->execute();
+            $by_ip = $sth->fetchAll();
+            $by_ip_count = $sth->rowCount();
             
-            if ($sth->rowCount() == 0) {
-                $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
-                $query->execute(array(
-                    ':post_id' => $longpost['id'],
-                    ':ip' => $ip,
-                    ':user_id' => $user_id
-                ));
-                
-                $views++;
+            if ($by_ip_count !== 0) {
+                if (isset($_SESSION['logged_in'])) {
+                    foreach ($by_ip as $ip_view) {
+                        if ($_SESSION['user']['id'] == $ip_view['user_id']) {
+                            $this_user_viewed = true;
+                            break;
+                        }
+                    }
+                } else {
+                    $this_user_viewed = true;
+                }
             }
-        } else {
+        }
+        
+        if (!$this_user_viewed) {
             $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
             $query->execute(array(
                 ':post_id' => $longpost['id'],
                 ':ip' => $ip,
-                ':user_id' => $user_id
+                ':user_id' => $_SESSION['user']['id']
             ));
+            
             $views++;
         }
         
