@@ -1,4 +1,14 @@
 ﻿<?php
+function getIp() {
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    return $ip;
+}
 
 if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations'=>1,'include_recent_message'=>1))) {
     // Markdown parser
@@ -8,6 +18,49 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
     $is_longpost = false;
     if ($longpost['type'] == 'net.longposts.longpost') {
         $is_longpost = true;
+
+        // Connect to db
+        $db = new PDO(DBHOST, DBUSER, DBPASS);
+        
+        $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$longpost['id']);
+        $sth->execute();
+        $views = $sth->fetch()[0];
+        $ip = str_replace(array('.'), '', getIp());
+        
+        if (isset($_SESSION['logged_in'])) {
+            $user_id = $_SESSION['user']['id'];
+            $str = "SELECT * FROM views WHERE post_id = ".$longpost['id']." AND user_id = ".$user_id;
+        } else {
+            $user_id = Null;
+            $str = "SELECT * FROM views WHERE post_id = ".$longpost['id']." AND ip = ".$ip;
+        }
+
+        // tick database for another view
+        if ($views > 0) {
+            // if there are views, check if this user has viewed, by username, then IP
+            $sth = $db->prepare($str);
+            $sth->execute();
+            
+            if ($sth->rowCount() == 0) {
+                $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
+                $query->execute(array(
+                    ':post_id' => $longpost['id'],
+                    ':ip' => $ip,
+                    ':user_id' => $user_id
+                ));
+                
+                $views++;
+            }
+        } else {
+            $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
+            $query->execute(array(
+                ':post_id' => $longpost['id'],
+                ':ip' => $ip,
+                ':user_id' => $user_id
+            ));
+            $views++;
+        }
+        
 
         if (isset($longpost['annotations'][0]['value']['global_post_id'])) {
             $global_post = $app->getPost($longpost['annotations'][0]['value']['global_post_id']);
@@ -53,6 +106,8 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
             echo '<a href="https://alpha.app.net/'.$mention['username'].'">@'.$mention['username'].'</a> ';
         }
         
+        echo '<p title="Approximate Views"><i class="fa fa-eye"></i> '.$views.'</p>';
+        
         // Retrieve replies
         if (isset($global_post) && !empty($global_post)) {
             echo '<p><strong>Activity</strong> '.$global_post['num_replies'].' Replies, '.$global_post['num_reposts'].' Reposts, '.$global_post['num_stars'].' Stars</p>';
@@ -87,7 +142,7 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
             
             <div>
                 <form action="reply.php" method="POST">
-                <p><textarea style="width:100%" name="reply_text" maxlength="256" autofocus>@'.$longpost['recent_message']['user']['username'].' </textarea></p>
+                <p><textarea style="width:100%" name="reply_text" maxlength="256">@'.$longpost['recent_message']['user']['username'].' </textarea></p>
                 
                 <p><button type="submit">Reply</button></p>
                 

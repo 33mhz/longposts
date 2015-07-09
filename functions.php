@@ -41,6 +41,12 @@ function brief_author($longpost) {
 }
 
 function longpost_preview($longpost,$include_author) {
+    // Connect to db
+    $db = new PDO(DBHOST, DBUSER, DBPASS);
+    $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$longpost['id']);
+    $sth->execute();
+    $views = $sth->fetch()[0];
+    
     // Markdown parser
     require_once 'public/stuff/Parsedown.php';
     $Parsedown = new Parsedown();
@@ -64,18 +70,18 @@ function longpost_preview($longpost,$include_author) {
     }
     
     // retrieve global post
-    if (isset($longpost['annotations'][0]['value']['reply_post_id'])) {
-        $global_post = $app->getPost($longpost['annotations'][0]['value']['reply_post_id']);
+    /*if (isset($longpost['annotations'][0]['value']['global_post_id'])) {
+        $global_post = $app->getPost($longpost['annotations'][0]['value']['global_post_id']);
         
         // discussion indicator
         if ($global_post['num_replies'] == '0') {
-            $discussion = '';
+            $discussion = ' · <i class="fa fa-eye"></i>'.$views;
         } else {
-            $discussion = ' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
+            $discussion = ' · <i class="fa fa-eye"></i>'.$views.' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
         }
-    } else {
-        $discussion = '';
-    }
+    } else {*/
+        $discussion = ' · <i class="fa fa-eye"></i>'.$views;
+    //}
     
     echo '
     
