@@ -53,11 +53,17 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
         }
         
         if (!$this_user_viewed) {
+            if (isset($_SESSION['logged_in'])) {
+                $user_id = $_SESSION['user']['id'];
+            } else {
+                $user_id = Null;
+            }
+            
             $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
             $query->execute(array(
                 ':post_id' => $longpost['id'],
                 ':ip' => $ip,
-                ':user_id' => $_SESSION['user']['id']
+                ':user_id' => $user_id
             ));
             
             $views++;
