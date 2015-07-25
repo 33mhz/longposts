@@ -21,9 +21,8 @@ echo '<!DOCTYPE html>
 ';
 if (isset($_SESSION['logged_in'])) {
     echo '<!--markdown editor-->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/editor/0.1.0/editor.css">
-<script src="//cdn.jsdelivr.net/editor/0.1.0/editor.js"></script>
-<script src="//cdn.jsdelivr.net/editor/0.1.0/marked.js"></script>';
+<link rel="stylesheet" href="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="//cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>';
 }
 echo '
 </head>

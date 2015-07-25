@@ -77,8 +77,8 @@ if (isset($_GET['id'])) {
 
 
 <script>
-var editor = new Editor();
-editor.render();
+var simplemde = new SimpleMDE();
+simplemde.render();
 
 // Variable to hold request
 var request;
@@ -104,7 +104,7 @@ function save_form(which) {
         var broadcast = 0;
     }
     var title = $('#title').val();
-    var body = editor.codemirror.getValue();
+    var body = simplemde.value();
     var description = $('#description').val();
     if (description == '') {
         description = body.substring(0,256);

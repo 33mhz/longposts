@@ -111,7 +111,7 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
             echo '<a href="https://alpha.app.net/hashtags/'.$tag['name'].'">#'.$tag['name'].'</a> ';
         }
         foreach ($longpost['recent_message']['entities']['mentions'] as $mention) {
-            echo '<a href="https://alpha.app.net/'.$mention['username'].'">@'.$mention['username'].'</a> ';
+            echo '<a href="https://alpha.app.net/'.$mention['name'].'">@'.$mention['name'].'</a> ';
         }
         
         echo '<p title="Approximate Views"><i class="fa fa-eye"></i> '.$views.'</p>';
