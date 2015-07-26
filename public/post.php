@@ -120,7 +120,7 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
         if (isset($global_post) && !empty($global_post)) {
             echo '<p><strong>Activity</strong> '.$global_post['num_replies'].' Replies, '.$global_post['num_reposts'].' Reposts, '.$global_post['num_stars'].' Stars</p>';
             
-            if ($thread = $app->getPostReplies($global_post['id'],$params = array('count'=>200))) {
+            if ($thread = $app->getPostReplies($global_post['id'],$params = array('count'=>200,'include_deleted'=>0))) {
                 array_pop($thread);
                 $thread = array_reverse($thread,true);
                 
