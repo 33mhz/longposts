@@ -86,7 +86,7 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
         ';
         echo brief_author($longpost);
         
-        if (isset($longpost['you_can_edit'])) {
+        if (isset($longpost['you_can_edit']) && $longpost['you_can_edit']) {
             echo '<a href="'.URL.'drafts/write?id='.$longpost['id'].'" style="float:right"><button type="button">Edit</button></a>';
         }
         echo '
