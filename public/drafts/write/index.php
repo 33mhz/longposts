@@ -77,7 +77,13 @@ if (isset($_GET['id'])) {
 
 
 <script>
-var simplemde = new SimpleMDE();
+var simplemde = new SimpleMDE({
+    autosave: {
+        enabled:true,
+        unique_id: 'longpost',
+        delay: 60000
+    }
+});
 simplemde.render();
 
 // Variable to hold request

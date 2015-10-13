@@ -47,6 +47,9 @@ if (!empty($page_key[1])) {
     } else if ($page_key[1] == 'category') {
         // category
         require_once 'category.php';
+    } else if ($page_key[1] == 'p') {
+        // OLD longposts
+        require_once 'old_longpost.php';
     }
 } else {
     // display frontpage
