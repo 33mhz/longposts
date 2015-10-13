@@ -30,7 +30,7 @@ function old_brief_author($longpost) {
         <p class="author-toggle"><a class="author-button" href="javascript:toggle_description(\''.$longpost['id'].'\')"><i class="fa fa-chevron-circle-down"></i></a></p>
         <a href="'.URL.'@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
         <span class="author-name">'.$name.'</span></a>
-        <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>
+        <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>
         
         <div class="author-description">
             '.$longpost['user']['description']['html'].'
