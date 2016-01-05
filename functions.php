@@ -1,5 +1,111 @@
 ﻿<?php
 
+function update_category($post_id,$category) {
+  // Connect to db
+  $db = new PDO(DBHOST, DBUSER, DBPASS);
+  
+  // check if post ID has a recorded category
+  $sth = $db->prepare("SELECT post_id, category FROM categories WHERE post_id = $post_id LIMIT 1");
+  $sth->execute();
+  $channel_exists = $sth->fetch();
+  
+  // if channel doesn't have record, insert
+  if ($sth->rowCount() == 0) {
+    $query = $db->prepare("INSERT INTO categories (post_id, category) VALUES (:post_id, :category)");
+    $query->execute(array(
+      ':post_id' => $post_id,
+      ':category' => $category
+    ));
+  } elseif ($channel_exists['category'] !== $category) {
+    // if channel hasn't been recorded with this category, update
+    $query = $db->prepare("UPDATE categories SET category = ':category' WHERE post_id = $post_id");
+	
+		$query->execute(array(':category' => $category));
+  }
+}
+
+function get_category_ids($category) {
+  // Connect to db
+  $db = new PDO(DBHOST, DBUSER, DBPASS);
+  
+  // get view count
+  $sth = $db->prepare("SELECT post_id FROM categories WHERE category = '$category' ORDER BY post_id DESC LIMIT 200");
+  $sth->execute();
+  $category_ids = $sth->fetchAll();
+  
+  $channel_ids = array();
+  foreach($category_ids as $category_id) {
+    $channel_ids[] = $category_id['post_id'];
+  }
+  
+  return $channel_ids;
+}
+
+function getIp() {
+  $ip = $_SERVER['REMOTE_ADDR'];
+
+  if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    $ip = $_SERVER['HTTP_CLIENT_IP'];
+  } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+  }
+  return $ip;
+}
+
+function update_views($post_id) {
+  // Connect to db
+  $db = new PDO(DBHOST, DBUSER, DBPASS);
+  
+  // get view count
+  $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$post_id);
+  $sth->execute();
+  $views = $sth->fetch()[0];
+  $ip = str_replace(array('.'), '', getIp());
+  
+  $this_user_viewed = false;
+  
+  // tick database for another view
+  if ($views > 0) {
+      // get visits from this IP
+      $sth = $db->prepare("SELECT * FROM views WHERE post_id = ".$post_id." AND ip = ".$ip);
+      $sth->execute();
+      $by_ip = $sth->fetchAll();
+      $by_ip_count = $sth->rowCount();
+      
+      if ($by_ip_count !== 0) {
+          if (isset($_SESSION['logged_in'])) {
+              foreach ($by_ip as $ip_view) {
+                  if ($_SESSION['user']['id'] == $ip_view['user_id']) {
+                      $this_user_viewed = true;
+                      break;
+                  }
+              }
+          } else {
+              $this_user_viewed = true;
+          }
+      }
+  }
+  
+  if (!$this_user_viewed) {
+      if (isset($_SESSION['logged_in'])) {
+          $user_id = $_SESSION['user']['id'];
+      } else {
+          $user_id = Null;
+      }
+      
+      $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
+      $query->execute(array(
+          ':post_id' => $post_id,
+          ':ip' => $ip,
+          ':user_id' => $user_id
+      ));
+      
+      $views++;
+  }
+  
+  return $views;
+}
+
 function author($user) {
     if (isset($user['name'])) {
         $name = $user['name'];

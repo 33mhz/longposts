@@ -1,15 +1,4 @@
 ﻿<?php
-function getIp() {
-    $ip = $_SERVER['REMOTE_ADDR'];
-
-    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    }
-    return $ip;
-}
-
 if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations'=>1,'include_recent_message'=>1))) {
     // Markdown parser
     require_once 'stuff/Parsedown.php';
@@ -19,54 +8,11 @@ if ($longpost = $app->getChannel($page_key[1],$params=array('include_annotations
     if ($longpost['type'] == 'net.longposts.longpost') {
         $is_longpost = true;
 
-        // Connect to db
-        $db = new PDO(DBHOST, DBUSER, DBPASS);
-        
-        // get view count
-        $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$longpost['id']);
-        $sth->execute();
-        $views = $sth->fetch()[0];
-        $ip = str_replace(array('.'), '', getIp());
-        
-        $this_user_viewed = false;
-        
-        // tick database for another view
-        if ($views > 0) {
-            // get visits from this IP
-            $sth = $db->prepare("SELECT * FROM views WHERE post_id = ".$longpost['id']." AND ip = ".$ip);
-            $sth->execute();
-            $by_ip = $sth->fetchAll();
-            $by_ip_count = $sth->rowCount();
-            
-            if ($by_ip_count !== 0) {
-                if (isset($_SESSION['logged_in'])) {
-                    foreach ($by_ip as $ip_view) {
-                        if ($_SESSION['user']['id'] == $ip_view['user_id']) {
-                            $this_user_viewed = true;
-                            break;
-                        }
-                    }
-                } else {
-                    $this_user_viewed = true;
-                }
-            }
-        }
-        
-        if (!$this_user_viewed) {
-            if (isset($_SESSION['logged_in'])) {
-                $user_id = $_SESSION['user']['id'];
-            } else {
-                $user_id = Null;
-            }
-            
-            $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
-            $query->execute(array(
-                ':post_id' => $longpost['id'],
-                ':ip' => $ip,
-                ':user_id' => $user_id
-            ));
-            
-            $views++;
+        // views
+        $views = update_views($longpost['id']);
+        // categories
+        if (isset($longpost['annotations'][0]['value']['category'])) {
+          update_category($longpost['id'], $longpost['annotations'][0]['value']['category']);
         }
         
 
