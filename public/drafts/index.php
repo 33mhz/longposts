@@ -1,8 +1,10 @@
 <?php
 
-require_once '../../config.php';
-require_once '../../AppDotNet.php';
-require_once '../../EZAppDotNet.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+\Dotenv\Dotenv::create(__DIR__.'/../..')->load();
+
+require_once __DIR__ . '/../../config.php';
 require_once '../../functions.php';
 
 // checking if the 'Remember me' checkbox was clicked
@@ -16,7 +18,7 @@ if (isset($_GET['rem'])) {
 	header('Location: '.URL);
 }
 
-$app = new EZAppDotNet();
+$app = new phpnut\ezphpnut();
 $login_url = $app->getAuthUrl();
 
 // if not logged in as user, use app for calls
@@ -27,17 +29,17 @@ if (isset($_SESSION['logged_in'])) {
     }
 } else {
     unset($_SESSION['user']);
+    header('location: '.URL);
 }
 
-$page_title = 'Lp · Drafts';
-require_once '../stuff/header.php';
+$page_title = 'Long posts &ndash; Drafts';
+require_once '../../templates/header.php';
 
 // Markdown parser
-require_once '../stuff/Parsedown.php';
-$Parsedown = new Parsedown();
+$Parsedown = new ParsedownExtra();
 
 // get drafts
-$longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','creator_id'=>$_SESSION['user']['id'],'is_private'=>1,'include_recent_message'=>1,'include_annotations'=>1), $query='', $order='id');
+$longposts = $app->searchChannels($params = ['channel_types'=>'st.longpo.longpost','creator_id'=>$_SESSION['user']['id'],'is_private'=>1,'include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
 
 
 echo '<h2>Private</h2>';
@@ -46,9 +48,9 @@ foreach($longposts as $longpost) {
     echo '
     
     <div id="post-'.$longpost['id'].'" class="article">
-        <a href="'.URL.'drafts/write?id='.$longpost['id'].'" style="float:right"><button type="button">Edit</button></a>
-        <h3><a href="'.URL.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h3>
-        <p>'.$Parsedown->text($longpost['recent_message']['html']).'</p>
+        <a href="/'.'drafts/write?id='.$longpost['id'].'" style="float:right"><button type="button">Edit</button></a>
+        <h3><a href="/'.$longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h3>
+        <p>'.$Parsedown->text($longpost['recent_message']['content']['html']).'</p>
     </div>
     
     ';
@@ -63,5 +65,4 @@ if (count($longposts) == 0) {
 }
 
 
-require_once '../stuff/footer.php';
-?>
+require_once '../../templates/footer.php';

@@ -1,6 +1,6 @@
 ﻿<?php
 
-function update_category($post_id,$category) {
+function update_category(int $post_id, string $category) {
   // Connect to db
   $db = new PDO(DBHOST, DBUSER, DBPASS);
   
@@ -11,7 +11,7 @@ function update_category($post_id,$category) {
   
   // if channel doesn't have record, insert
   if ($sth->rowCount() == 0) {
-    $query = $db->prepare("INSERT INTO categories (post_id, category) VALUES (:post_id, :category)");
+    $query = $db->prepare('INSERT INTO categories (post_id, category) VALUES (:post_id, :category)');
     $query->execute(array(
       ':post_id' => $post_id,
       ':category' => $category
@@ -20,11 +20,11 @@ function update_category($post_id,$category) {
     // if channel hasn't been recorded with this category, update
     $query = $db->prepare("UPDATE categories SET category = ':category' WHERE post_id = $post_id");
 	
-		$query->execute(array(':category' => $category));
+		$query->execute([':category' => $category]);
   }
 }
 
-function get_category_ids($category) {
+function get_category_ids(string $category) {
   // Connect to db
   $db = new PDO(DBHOST, DBUSER, DBPASS);
   
@@ -52,12 +52,12 @@ function getIp() {
   return $ip;
 }
 
-function update_views($post_id) {
+function update_views(int $post_id) {
   // Connect to db
   $db = new PDO(DBHOST, DBUSER, DBPASS);
   
   // get view count
-  $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$post_id);
+  $sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$post_id);
   $sth->execute();
   $views = $sth->fetch()[0];
   $ip = str_replace(array('.'), '', getIp());
@@ -67,7 +67,7 @@ function update_views($post_id) {
   // tick database for another view
   if ($views > 0) {
       // get visits from this IP
-      $sth = $db->prepare("SELECT * FROM views WHERE post_id = ".$post_id." AND ip = ".$ip);
+      $sth = $db->prepare("SELECT * FROM views WHERE post_id = $post_id AND ip = $ip");
       $sth->execute();
       $by_ip = $sth->fetchAll();
       $by_ip_count = $sth->rowCount();
@@ -93,7 +93,7 @@ function update_views($post_id) {
           $user_id = Null;
       }
       
-      $query = $db->prepare("INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)");
+      $query = $db->prepare('INSERT INTO views (post_id, ip, user_id) VALUES (:post_id, :ip, :user_id)');
       $query->execute(array(
           ':post_id' => $post_id,
           ':ip' => $ip,
@@ -114,12 +114,12 @@ function author($user) {
     }
     
     echo '
-    <a href="'.URL.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['avatar_image']['url'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
+    <a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['link'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
     <span class="author-name" style="font-size:150%">'.$name.'</span></a>
     
     <div class="author-description" style="height:auto;border-bottom:1px dotted #ccc;padding:1.2em;margin-bottom:1em">
-        '.$user['description']['html'].'
-        <p><a class="author-name" href="'.$user['canonical_url'].'" target="_blank">@'.$user['username'].' on App.net <i class="fa fa-external-link"></i></a></p>
+        '.$user['content']['html'].'
+        <p><a class="author-name" href="https://pnut.io/@'.$user['username'].'" target="_blank">@'.$user['username'].' on Pnut</a></p>
     </div>
     ';
 }
@@ -133,14 +133,14 @@ function old_brief_author($longpost) {
     
     echo '
     <div class="meta-top">
-        <p class="author-toggle"><a class="author-button" href="javascript:toggle_description(\''.$longpost['id'].'\')"><i class="fa fa-chevron-circle-down"></i></a></p>
-        <a href="'.URL.'@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
+        <p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
+        <a href="/@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['content']['avatar_image']['link'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
         <span class="author-name">'.$name.'</span></a>
-        <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp tstamp" href="'.$longpost['canonical_url'].'">'.$longpost['created_at'].'</a></p>
+        <p class="author-permalink" title="'.$longpost['created_at'].'"><a class="author-tstamp tstamp" href="https://pnut.io/@'.$longpost['user']['username'].'">'.$longpost['created_at'].'</a></p>
         
         <div class="author-description">
-            '.$longpost['user']['description']['html'].'
-            <p><a class="author-name" href="'.$longpost['user']['canonical_url'].'" target="_blank">@'.$longpost['user']['username'].' on App.net <i class="fa fa-external-link"></i></a></p>
+            '.$longpost['user']['content']['html'].'
+            <p><a class="author-name" href="https://pnut.io/@'.$longpost['user']['username'].'" target="_blank">@'.$longpost['user']['username'].' on Pnut</a></p>
         </div>
     </div>
     ';
@@ -155,37 +155,57 @@ function brief_author($longpost) {
     
     echo '
     <div class="meta-top">
-        <p class="author-toggle"><a class="author-button" href="javascript:toggle_description(\''.$longpost['id'].'\')"><i class="fa fa-chevron-circle-down"></i></a></p>
-        <a href="'.URL.'@'.$longpost['owner']['username'].'"><img class="author-avatar" src="'.$longpost['owner']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['owner']['username'].'"/>
+        <p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
+        <a href="/'.'@'.$longpost['owner']['username'].'"><img class="author-avatar" src="'.$longpost['owner']['content']['avatar_image']['link'].'?w=45&h=45" title="@'.$longpost['owner']['username'].'"/>
         <span class="author-name">'.$name.'</span></a>
-        <p class="author-permalink" title="'.$longpost['recent_message']['created_at'].'"><a class="author-tstamp tstamp" href="'.URL.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>
+        <p class="author-permalink" title="'.$longpost['recent_message']['created_at'].'"><span class="author-tstamp tstamp">'.$longpost['recent_message']['created_at'].'</span></p>
         
         <div class="author-description">
-            '.$longpost['owner']['description']['html'].'
-            <p><a class="author-name" href="'.$longpost['owner']['canonical_url'].'" target="_blank">@'.$longpost['owner']['username'].' on App.net <i class="fa fa-external-link"></i></a></p>
+            '.$longpost['owner']['content']['html'].'
+            <p><a class="author-name" href="https://pnut.io/@'.$longpost['owner']['username'].'" target="_blank">@'.$longpost['owner']['username'].' on Pnut</a></p>
         </div>
     </div>
     ';
 }
 
-function longpost_preview($longpost,$include_author) {
+function reply_content($reply)
+{
+    echo '
+    <div class="reply">
+        <div class="reply-avatar" title="@' . $reply['user']['username'] . '">
+            <a href="https://pnut.io/@'.$reply['user']['username'].'" target="_blank"><img src="'.$reply['user']['content']['avatar_image']['link'].'?w=45&h=45" width="45" height="45"/></a>
+        </div>
+
+        <div class="reply-text-area">
+            <div class="reply-username">
+                <a href="https://pnut.io/@'.$reply['user']['username'].'" target="_blank">@'.$reply['user']['username'].'</a>
+            </div>
+
+            <div class="reply-html">
+                '.$reply['content']['html'].'
+            </div>
+        </div>
+    </div>
+    ';
+}
+
+function longpost_p_preview($longpost,$include_author) {
     // Connect to db
     $db = new PDO(DBHOST, DBUSER, DBPASS);
-    $sth = $db->prepare("SELECT COUNT(*) FROM views WHERE post_id = ".$longpost['id']);
+    $sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$longpost['id']);
     $sth->execute();
     $views = $sth->fetch()[0];
     
     // Markdown parser
-    require_once 'public/stuff/Parsedown.php';
-    $Parsedown = new Parsedown();
+    $Parsedown = new ParsedownExtra();
     
     // Make a random guess at reading speed and don't even consider wordage
-    $body_by_word = preg_split('/\s+/', $longpost['recent_message']['annotations'][0]['value']['body']);
+    $body_by_word = preg_split('/\s+/', $longpost['raw'][0]['value']['body']);
     $readingTime = ceil(count($body_by_word) / 175);
     
     // Cut previews after a handful of words
-    if (isset($longpost['recent_message']['html']) && !empty($longpost['recent_message']['html'])) {
-        $body_preview = $longpost['recent_message']['html'];
+    if (isset($longpost['content']['html']) && !empty($longpost['content']['html'])) {
+        $body_preview = $longpost['content']['html'];
     } else {
         $body_preview = '';
         $preview_word_count = min(count($body_by_word),70)-1;
@@ -198,38 +218,91 @@ function longpost_preview($longpost,$include_author) {
     }
     
     // retrieve global post
-    /*if (isset($longpost['annotations'][0]['value']['global_post_id'])) {
-        $global_post = $app->getPost($longpost['annotations'][0]['value']['global_post_id']);
+    /*if (isset($longpost['raw'][0]['value']['global_post_id'])) {
+        $global_post = $app->getPost($longpost['raw'][0]['value']['global_post_id']);
         
         // discussion indicator
         if ($global_post['num_replies'] == '0') {
-            $discussion = ' · <i class="fa fa-eye"></i>'.$views;
+            $discussion = ' · '.$views.' views';
         } else {
-            $discussion = ' · <i class="fa fa-eye"></i>'.$views.' · <span title="Has replies"><i class="fa fa-comments"></i></span>';
+            $discussion = ' · '.$views.' views · <span title="Has replies">Comments</span>';
         }
     } else {*/
-        $discussion = ' · <i class="fa fa-eye"></i>'.$views;
+        $discussion = ' · '.$views.' views';
     //}
     
     echo '
     
     <div class="article" id="post-'.$longpost['id'].'">
-        ';
+        <h2 class="title"><a href="/' . $longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h2>';
         if ($include_author) {
             echo brief_author($longpost);
-        }
-        echo '
-        
-        <h2 class="title"><a href="'.URL.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h2>';
-        if (!$include_author) {
-            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="'.URL.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>';
+        } else {
+            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'">'.$longpost['created_at'].'</a></p>';
         }
         echo '<div class="body">'.$body_preview.'</div>
         
-        <div class="meta-bottom"><a href="'.URL.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+        <div class="meta-bottom"><a href="/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
     </div>
     
     ';
 }
 
-?>
+function longpost_preview($longpost,$include_author) {
+    // Connect to db
+    $db = new PDO(DBHOST, DBUSER, DBPASS);
+    $sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$longpost['id']);
+    $sth->execute();
+    $views = $sth->fetch()[0];
+    
+    // Markdown parser
+    $Parsedown = new ParsedownExtra();
+    
+    // Make a random guess at reading speed and don't even consider wordage
+    $body_by_word = preg_split('/\s+/', $longpost['recent_message']['raw'][0]['value']['body']);
+    $readingTime = ceil(count($body_by_word) / 175);
+    
+    // Cut previews after a handful of words
+    if (isset($longpost['recent_message']['content']['html']) && !empty($longpost['recent_message']['content']['html'])) {
+        $body_preview = $longpost['recent_message']['content']['html'];
+    } else {
+        $body_preview = '';
+        $preview_word_count = min(count($body_by_word),70)-1;
+        for ($n = 0; $n < $preview_word_count; $n++) {
+            $body_preview .= ' '.$body_by_word[$n];
+        }
+        
+        // parse markdown
+        $body_preview = $Parsedown->text($body_preview.'&#8230;');
+    }
+    
+    // retrieve global post
+    /*if (isset($longpost['raw'][0]['value']['global_post_id'])) {
+        $global_post = $app->getPost($longpost['raw'][0]['value']['global_post_id']);
+        
+        // discussion indicator
+        if ($global_post['num_replies'] == '0') {
+            $discussion = ' · '.$views.' views';
+        } else {
+            $discussion = ' · '.$views.' views · <span title="Has replies">Comments</span>';
+        }
+    } else {*/
+        $discussion = ' · '.$views.' views';
+    //}
+    
+    echo '
+    
+    <div class="article" id="post-'.$longpost['id'].'">
+        <h2 class="title"><a href="/' . $longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h2>';
+        if ($include_author) {
+            echo brief_author($longpost);
+        } else {
+            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>';
+        }
+        echo '<div class="body">'.$body_preview.'</div>
+        
+        <div class="meta-bottom"><a href="/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+    </div>
+    
+    ';
+}

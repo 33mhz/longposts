@@ -1,9 +1,11 @@
 ﻿<?php
 
-require_once '../config.php';
-require_once '../AppDotNet.php';
-require_once '../EZAppDotNet.php';
-require_once '../functions.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+\Dotenv\Dotenv::create(__DIR__.'/..')->load();
+
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../functions.php';
 
 // checking if the 'Remember me' checkbox was clicked
 if (isset($_GET['rem'])) {
@@ -16,7 +18,7 @@ if (isset($_GET['rem'])) {
 	header('Location: '.URL);
 }
 
-$app = new EZAppDotNet();
+$app = new phpnut\ezphpnut();
 $login_url = $app->getAuthUrl();
 
 // if not logged in as user, use app for calls
@@ -26,8 +28,8 @@ if (isset($_SESSION['logged_in'])) {
         $_SESSION['user'] = $app->getUser();
     }
 } else {
-    $app = new AppDotNet(API_ID,API_SECRET);
-    $token = $app->getAppAccessToken();
+    // $app = new phpnut\phpnut(getenv('PNUT_CLIENT_ID'), getenv('PNUT_CLIENT_SECRET'));
+    // $token = $app->getAppAccessToken();
     unset($_SESSION['user']);
 }
 
@@ -40,23 +42,21 @@ $page_key = explode('/',$url);
 if (!empty($page_key[1])) {
     if (is_numeric($page_key[1])) {
         // display post
-        require_once 'post.php';
-    } else if (substr($page_key[1],0,1) == '@') {
+        require_once '../templates/post.php';
+    } elseif (substr($page_key[1],0,1) == '@') {
         // display a user's posts
-        require_once 'user.php';
+        require_once '../templates/user.php';
     } else if ($page_key[1] == 'category') {
         // category
-        require_once 'category.php';
+        require_once '../templates/category.php';
     } else if ($page_key[1] == 'p') {
         // OLD longposts
-        require_once 'old_longpost.php';
+        require_once '../templates/old_longpost.php';
     }
 } else {
     // display frontpage
-    require_once 'frontpage.php';
+    require_once '../templates/frontpage.php';
 }
 
 // Close tags
-require_once 'stuff/footer.php';
-
-?>
+require_once '../templates/footer.php';

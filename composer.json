@@ -1,0 +1,22 @@
+{
+    "name": "33mhz/longposts",
+    "type": "project",
+    "version": "0.1.0",
+    "description": "Small site showing longposts from Pnut.io",
+    "homepage": "https://longpo.st",
+    "license": "none",
+    "authors": [
+        {
+            "name": "33MHz",
+            "homepage": "https://pnut.io/@33mhz",
+            "role": "Developer"
+        }
+    ],
+    "require":{
+        "pnut-api/phpnut": "^0.5.2",
+        "vlucas/phpdotenv": "^3.6.0",
+        "erusev/parsedown-extra": "^0.8.0-beta-1"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

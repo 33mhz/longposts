@@ -1,8 +1,8 @@
 ﻿<?php
 
 if (isset($page_key[2])) {
-    $page_title = 'Lp · Category '.$page_key[2];
-    require_once 'stuff/header.php';
+    $page_title = 'Lp &ndash; Category '.$page_key[2];
+    require_once 'header.php';
 
     // get drafts
     // $longposts = $app->searchChannels($params = array('type'=>'net.longposts.longpost','tags'=>$page_key[2],'is_private'=>0,'include_recent_message'=>1,'include_annotations'=>1), $query='', $order='id');
@@ -13,14 +13,14 @@ if (isset($page_key[2])) {
     
     if ($channel_ids) {
       // get posts by category
-      $longposts = $app->getChannels($channel_ids, array('include_recent_message'=>1,'include_annotations'=>1));
+      $longposts = $app->getChannels($channel_ids, ['include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
 
       foreach($longposts as $longpost) {
         
         echo '
         
         <div id="post-'.$longpost['id'].'" class="article">
-            <h3><a href="'.URL.$longpost['id'].'">'.$longpost['annotations'][0]['value']['title'].'</a></h3>
+            <h3><a href="/'.$longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h3>
             <p>'.$longpost['recent_message']['html'].'</p>
         </div>
         
@@ -37,5 +37,4 @@ if (isset($page_key[2])) {
     
 }
 
-require_once 'stuff/footer.php';
-?>
+require_once 'footer.php';
