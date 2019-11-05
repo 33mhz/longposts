@@ -10,7 +10,7 @@ echo '<!DOCTYPE html>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--<link id="siteicon" rel="icon" href="../icon.png"/>-->
-    <link href="/static/css/main.css?d=20191103" rel="stylesheet"/>
+    <link href="/static/css/main.css?d=20191104" rel="stylesheet"/>
     <script src="/static/js/jquery.js"></script>
 ';
 if (isset($_SESSION['logged_in'])) {
@@ -22,7 +22,7 @@ echo '
 </head>
 <body';
 if (isset($single_page)) {
-    echo ' class="single-page"';
+    echo ' class="single-article"';
 }
 echo '>
 

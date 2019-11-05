@@ -1,7 +1,7 @@
 ﻿<?php
 
 if (isset($page_key[2])) {
-    $page_title = 'Lp &ndash; Category '.$page_key[2];
+    $page_title = 'Long posts &ndash; Category '.$page_key[2];
     require_once 'header.php';
 
     // get drafts
@@ -9,7 +9,7 @@ if (isset($page_key[2])) {
     // get list of posts by category
     $channel_ids = get_category_ids($page_key[2]);
     
-    echo '<h2>Category: '.$page_key[2].'</h2>';
+    echo '<h2>Category: <i>'.$page_key[2].'</i></h2>';
     
     if ($channel_ids) {
       // get posts by category
@@ -21,7 +21,7 @@ if (isset($page_key[2])) {
         
         <div id="post-'.$longpost['id'].'" class="article">
             <h3><a href="/'.$longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h3>
-            <p>'.$longpost['recent_message']['html'].'</p>
+            <p>'.($longpost['recent_message']['content']['html'] ?? 'DELETED').'</p>
         </div>
         
         ';

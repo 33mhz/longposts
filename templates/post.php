@@ -30,7 +30,7 @@ try {
 
         echo '
 
-        <div id="post-'.$longpost['id'].'" class="single-article">
+        <div id="post-'.$longpost['id'].'">
 
         <h2 class="title">'.$title.'</h2>';
         
