@@ -5,23 +5,28 @@ try {
 
     // Markdown parser
     $Parsedown = new ParsedownExtra();
+    $Parsedown->setSafeMode(true);
     
     $is_longpost = false;
+
     foreach ($longpost['raw'] as $annotation) {
         if ($annotation['type'] === 'nl.chimpnut.blog.post') {
 
             $is_longpost = true;
+            $single_page = true;
 
-            $page_title = $annotation['value']['title'].' &ndash; Long post';
+            $page_title = htmlentities((empty($annotation['value']['title']) ? (substr($annotation['value']['body'], 0, 42) . '…') : $annotation['value']['title']), ENT_QUOTES) . ' &ndash; Long posts';
+            $page_description = substr($annotation['value']['body'], 0, 256) . '…';
+
             require_once 'header.php';
             
             echo '
             
-            <div id="post-'.$longpost['id'].'" class="single-article">
+            <div id="post-'.$longpost['id'].'">
 
             <h2 class="title">'.$annotation['value']['title'].'</h2>';
 
-            old_brief_author($longpost);
+            brief_author($longpost, true);
 
             echo '
             <div class="body">'.$Parsedown->text($annotation['value']['body']).'</div>

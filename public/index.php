@@ -44,8 +44,13 @@ if (!empty($page_key[1])) {
         // display post
         require_once '../templates/post.php';
     } elseif (substr($page_key[1],0,1) == '@') {
-        // display a user's posts
-        require_once '../templates/user.php';
+        if (isset($page_key[2])) {
+            // display post
+            require_once '../templates/post.php';
+        } else {
+            // display a user's posts
+            require_once '../templates/user.php';
+        }
     } else if ($page_key[1] == 'category') {
         // category
         require_once '../templates/category.php';

@@ -8,8 +8,16 @@ echo '<!DOCTYPE html>
     <title>'.$page_title.'</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--<link id="siteicon" rel="icon" href="../icon.png"/>-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">';
+    if (isset($page_description)) {
+    echo '
+    <meta name="description" content="' . htmlentities($page_description,ENT_QUOTES) . '">';
+    }
+    if (isset($rss_url)) {
+    	echo '
+    	<link rel="alternate" type="application/rss+xml" href="' . $rss_url . '">';
+    }
+    echo '
     <link href="/static/css/main.css?d=20191104" rel="stylesheet"/>
     <script src="/static/js/jquery.js"></script>
 ';
@@ -32,7 +40,7 @@ echo '>
     if (!isset($_SESSION['logged_in'])) {
         echo '<a href="'.$login_url.'">Log in</a>';
     } else {
-        echo '<a href="/@'.$_SESSION['user']['username'].'">@'.$_SESSION['user']['username'].'</a> <a href="/drafts">Drafts</a> <a href="/drafts/write">Write</a> <a href="/logout">Log out</a>';
+        echo '<a href="/@'.$_SESSION['user']['username'].'">@'.$_SESSION['user']['username'].'</a> | <a href="/drafts">Drafts</a> | <a href="/drafts/write">Write</a> | <a href="/logout">Log out</a>';
     }
     echo '</div>
 

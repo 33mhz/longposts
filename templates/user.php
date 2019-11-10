@@ -3,8 +3,8 @@
 // if user found
 if ($user = $app->getUser($page_key[1])) {
 
-    $page_title = 'Long posts by '.$page_key[1];
-    $heading = 'Long posts';
+    $page_title = 'Long posts by '.htmlentities($page_key[1], ENT_QUOTES);
+    $rss_url = 'https://api.pnut.io/v0/feed/rss/channels/search?channel_types=st.longpo.longpost&order=activity&owner_id=' . $user['id'];
 
     require_once 'header.php';
     

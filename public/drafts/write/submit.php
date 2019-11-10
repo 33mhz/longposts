@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 \Dotenv\Dotenv::create(__DIR__.'/../../..')->load();
 require_once __DIR__ . '/../../../config.php';
+require_once __DIR__ . '/../../../functions.php';
 
 $app = new phpnut\ezphpnut();
 
@@ -23,12 +24,11 @@ if (isset($_SESSION['logged_in'])) {
         
         // title
         $title = $_POST['title'];
-        
         // body
         $body = $_POST['body'];
         
         // category
-        if (empty($_POST['category']) || !isset($_POST['category'])) {
+        if (empty($_POST['category'])) {
             $category = '';
         } else {
             $category = $_POST['category'];
@@ -54,9 +54,22 @@ if (isset($_SESSION['logged_in'])) {
                 ]
             ];
         }
+
+        // make sure slug (title) isn't duplicate
+        if ($_POST['type'] === 'save') {
+            if (entry_exists($title, $_SESSION['user']['id'])) {
+                $_SESSION['NEG_NOTICE'][] = 'Error creating post: title matches existing post.';
+                $returns = ['notice'=>'Error creating post: title matches existing post.','status'=>0,'redirect'=>URL.'drafts/write'];
+            }
+        } else {
+            if (entry_exists($title, $_SESSION['user']['id'], $channel_id)) {
+                $_SESSION['NEG_NOTICE'][] = 'Error updating post: title matches existing post.';
+                $returns = ['notice'=>'Error updating post: title matches existing post.','status'=>0,'redirect'=>URL.'drafts/write'];
+            }
+        }
         
         // save draft
-        if ($_POST['type'] == 'save') {
+        if ($_POST['type'] === 'save') {
             // create new channel
             if ($channel = $app->createChannel($channel_data)) {
                 $channel_id = $channel['id'];
@@ -86,7 +99,7 @@ if (isset($_SESSION['logged_in'])) {
             }
         }
         // publish
-        else if ($_POST['type'] == 'publish') {
+        else if ($_POST['type'] === 'publish') {
             // set readers to public
             $channel_data['acl']['read'] = [
                 'any_user' => false,
@@ -152,7 +165,7 @@ if (isset($_SESSION['logged_in'])) {
             }
         }
         // save updated draft
-        else if ($_POST['type'] == 'update') {
+        else if ($_POST['type'] === 'update') {
             // update channel
             if ($channel = $app->updateChannel($channel_id,$channel_data)) {
                 // create message
@@ -227,6 +240,11 @@ if (isset($_SESSION['logged_in'])) {
                 $_SESSION['NEG_NOTICE'][] = 'Couldn\'t delete!';
                 $returns = array('notice'=>'Couldn\'t delete!','status'=>0,'redirect'=>URL.$channel_id);
             }
+        }
+
+        // update local database for lookup later
+        if ($_POST['type'] !== 'delete') {
+            update_entry($channel_id, $category, $title, $_SESSION['user']['username'], $_SESSION['user']['id']);
         }
 
         // Handle broadcasting

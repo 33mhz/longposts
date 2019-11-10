@@ -63,6 +63,7 @@ if (isset($_GET['id'])) {
 <div class="editor-wrapper">
     <form name="draft_form">
     <input class="title" type="text" id="title" name="post_title" placeholder="Title" value="<?php echo $title; ?>" required/>
+
     <textarea id="editor" name="post_body" placeholder="Content here ...." maxlength="8400"><?php echo $body; ?></textarea>
 
     <p><label>Category: <input type="text" id="category" name="category" placeholder="Optional" value="<?php echo $category; ?>" /></label></p>
@@ -152,5 +153,5 @@ function save_form(which) {
     }
 }
 </script>
-<?
+<?php
 require_once '../../../templates/footer.php';
