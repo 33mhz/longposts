@@ -7,7 +7,7 @@ try {
 		$query = $db->prepare('SELECT post_id FROM categories WHERE username = :username AND slug = :slug LIMIT 1');
 		$query->execute([
 			':username'=>strtolower(substr($page_key[1],1)),
-			':slug'=>strtolower($page_key[2]),
+			':slug'=>urldecode(strtolower($page_key[2])),
 		]);
 		$entry = $query->fetch();
 

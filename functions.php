@@ -2,7 +2,7 @@
 
 function get_slug(string $title)
 {
-  $slug = preg_replace('/[^\w-]/','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
+  $slug = preg_replace('/[^\pL-]/u','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
   if (strlen($slug) > 150) {
     $last_break = strpos($slug, '-', 150);
   }
@@ -193,6 +193,36 @@ function author($user)
     ';
 }
 
+function rel_time(string $created_at, bool $full = false)
+{
+	$now = new DateTime;
+	$ago = new DateTime($created_at);
+	$diff = $now->diff($ago);
+
+	$diff->w = floor($diff->d / 7);
+	$diff->d -= $diff->w * 7;
+
+	$string = array(
+	    'y' => 'year',
+	    'm' => 'month',
+	    'w' => 'week',
+	    'd' => 'day',
+	    'h' => 'hour',
+	    'i' => 'minute',
+	    's' => 'second',
+	);
+	foreach ($string as $k => &$v) {
+	    if ($diff->$k) {
+	        $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+	    } else {
+	        unset($string[$k]);
+	    }
+	}
+
+	if (!$full) $string = array_slice($string, 0, 1);
+	return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
 function brief_author($longpost, bool $is_post=false)
 {
     if ($is_post) {
@@ -202,6 +232,8 @@ function brief_author($longpost, bool $is_post=false)
         $creator_variable = 'owner';
         $created_at = $longpost['recent_message']['created_at'];
     }
+    $rel_created_at = rel_time($created_at);
+
     if (isset($longpost[$creator_variable]['name'])) {
         $name = $longpost[$creator_variable]['name'];
     } else {
@@ -213,7 +245,7 @@ function brief_author($longpost, bool $is_post=false)
         <p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
         <a href="/'.'@'.$longpost[$creator_variable]['username'].'"><img class="author-avatar" src="'.$longpost[$creator_variable]['content']['avatar_image']['link'].'?w=45&h=45" title="@'.$longpost[$creator_variable]['username'].'"/>
         <span class="author-name">'.$name.'</span></a>
-        <p class="author-permalink" title="'.$created_at.'"><span class="author-tstamp tstamp">'.$created_at.'</span></p>
+        <p class="author-permalink" title="'.$created_at.'"><span class="author-tstamp tstamp">'.$rel_created_at.'</span></p>
         
         <div class="author-description">
             '.$longpost[$creator_variable]['content']['html'].'
@@ -285,6 +317,7 @@ function longpost_p_preview($longpost,$include_author) {
     } else {*/
         $discussion = ' · '.$views.' views';
     //}
+    $rel_created_at = rel_time($longpost['created_at']);
     
     echo '
     
@@ -293,7 +326,7 @@ function longpost_p_preview($longpost,$include_author) {
         if ($include_author) {
             echo brief_author($longpost);
         } else {
-            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'">'.$longpost['created_at'].'</a></p>';
+            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'" title="'.$longpost['created_at'].'">'.$rel_created_at.'</a></p>';
         }
         echo '<div class="body">'.$body_preview.'</div>
         
@@ -345,6 +378,7 @@ function longpost_preview($longpost,$include_author) {
     } else {*/
         $discussion = ' · '.$views.' views';
     //}
+    $rel_created_at = rel_time($longpost['recent_message']['created_at']);
     
     echo '
     
@@ -353,7 +387,7 @@ function longpost_preview($longpost,$include_author) {
         if ($include_author) {
             echo brief_author($longpost);
         } else {
-            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'">'.$longpost['recent_message']['created_at'].'</a></p>';
+            echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'" title="' . $longpost['recent_message']['created_at'] . '">'.$rel_created_at.'</a></p>';
         }
         echo '<div class="body">'.$body_preview.'</div>
         
