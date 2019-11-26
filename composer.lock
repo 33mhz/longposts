@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b2f9216d7ff14b9b1fbc3ef790c5cab9",
+    "content-hash": "d63a89a0092e802f49266b2ad1fd5dac",
     "packages": [
         {
             "name": "erusev/parsedown",
@@ -104,28 +104,28 @@
         },
         {
             "name": "phpoption/phpoption",
-            "version": "1.5.0",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/php-option.git",
-                "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed"
+                "reference": "2ba2586380f8d2b44ad1b9feb61c371020b27793"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/94e644f7d2051a5f0fcf77d81605f152eecff0ed",
-                "reference": "94e644f7d2051a5f0fcf77d81605f152eecff0ed",
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/2ba2586380f8d2b44ad1b9feb61c371020b27793",
+                "reference": "2ba2586380f8d2b44ad1b9feb61c371020b27793",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.7.*"
+                "phpunit/phpunit": "^4.7|^5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3-dev"
+                    "dev-master": "1.5-dev"
                 }
             },
             "autoload": {
@@ -135,7 +135,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache2"
+                "Apache-2.0"
             ],
             "authors": [
                 {
@@ -150,20 +150,20 @@
                 "php",
                 "type"
             ],
-            "time": "2015-07-25T16:39:46+00:00"
+            "time": "2019-11-06T22:27:00+00:00"
         },
         {
             "name": "pnut-api/phpnut",
-            "version": "0.5.2",
+            "version": "0.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pnut-api/phpnut.git",
-                "reference": "e27d62490266bc0d724b8e9813e61ec420f9b6c3"
+                "reference": "15e8faeead04fc0b57b4867ee0effccfef520dc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pnut-api/phpnut/zipball/e27d62490266bc0d724b8e9813e61ec420f9b6c3",
-                "reference": "e27d62490266bc0d724b8e9813e61ec420f9b6c3",
+                "url": "https://api.github.com/repos/pnut-api/phpnut/zipball/15e8faeead04fc0b57b4867ee0effccfef520dc4",
+                "reference": "15e8faeead04fc0b57b4867ee0effccfef520dc4",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "library",
                 "pnut"
             ],
-            "time": "2019-09-06T01:09:16+00:00"
+            "time": "2019-11-06T15:05:33+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
