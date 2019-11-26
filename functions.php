@@ -318,11 +318,17 @@ function longpost_p_preview($longpost,$include_author) {
         $discussion = ' · '.$views.' views';
     //}
     $rel_created_at = rel_time($longpost['created_at']);
+
+	if (empty($longpost['raw'][0]['value']['title'])) {
+		$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
+	} else {
+		$title = $longpost['raw'][0]['value']['title'];
+	}
     
     echo '
     
     <div class="article" id="post-'.$longpost['id'].'">
-        <h2 class="title"><a href="/' . $longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h2>';
+        <h2 class="title"><a href="/p/' . $longpost['id'].'">'.$title.'</a></h2>';
         if ($include_author) {
             echo brief_author($longpost);
         } else {
@@ -330,7 +336,7 @@ function longpost_p_preview($longpost,$include_author) {
         }
         echo '<div class="body">'.$body_preview.'</div>
         
-        <div class="meta-bottom"><a href="/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+        <div class="meta-bottom"><a href="/p/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
     </div>
     
     ';

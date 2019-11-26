@@ -18,13 +18,19 @@ try {
             $page_title = htmlentities((empty($annotation['value']['title']) ? (substr($annotation['value']['body'], 0, 42) . '…') : $annotation['value']['title']), ENT_QUOTES) . ' &ndash; Long posts';
             $page_description = substr($annotation['value']['body'], 0, 256) . '…';
 
+		if (empty($annotation['value']['title'])) {
+			$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
+		} else {
+			$title = htmlentities($annotation['value']['title'], ENT_QUOTES);
+		}
+
             require_once 'header.php';
             
             echo '
             
             <div id="post-'.$longpost['id'].'">
 
-            <h2 class="title">'.$annotation['value']['title'].'</h2>';
+            <h2 class="title">'.$title.'</h2>';
 
             brief_author($longpost, true);
 
@@ -41,7 +47,7 @@ try {
             }*/
             
             // Retrieve replies
-            if ($thread = $app->getPostThread($post_id,$params = ['count'=>200])) {
+            if ($thread = $app->getPostThread($post_id,$params = ['count'=>200,'include_deleted'=>0])) {
                 array_pop($thread);
                 $thread = array_reverse($thread,true);
                 

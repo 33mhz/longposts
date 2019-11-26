@@ -36,7 +36,8 @@ if (isset($_SESSION['logged_in'])) {
 // get post ID from URL
 $post_id = basename("https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 $url = $_SERVER['REQUEST_URI'];
-$page_key = explode('/',$url);
+$url = parse_url($_SERVER['REQUEST_URI']);
+$page_key = explode('/',$url['path']);
 
 // what page are we viewing?
 if (!empty($page_key[1])) {

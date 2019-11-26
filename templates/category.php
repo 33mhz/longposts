@@ -1,6 +1,7 @@
 ﻿<?php
 
 if (isset($page_key[2])) {
+	$page_key[2] = htmlentities($page_key[2], ENT_QUOTES);
     $page_title = 'Long posts &ndash; Category '.$page_key[2];
     require_once 'header.php';
 
@@ -16,11 +17,11 @@ if (isset($page_key[2])) {
       $longposts = $app->getChannels($channel_ids, ['include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
 
       foreach($longposts as $longpost) {
-        
+
         echo '
         
         <div id="post-'.$longpost['id'].'" class="article">
-            <h3><a href="/'.$longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h3>
+            <h3><a href="/'.$longpost['id'].'">'. htmlentities($longpost['raw'][0]['value']['title'], ENT_QUOTES) .'</a></h3>
             <p>'.($longpost['recent_message']['content']['html'] ?? 'DELETED').'</p>
         </div>
         
