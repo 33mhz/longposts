@@ -1,7 +1,7 @@
 <?php
 
 try {
-    $longpost = $app->getPost($post_id,$params=['include_post_raw'=>1]);
+    $longpost = $app->getPost($post_id, ['include_post_raw'=>1]);
 
     // Markdown parser
     $Parsedown = new ParsedownExtra();
@@ -9,19 +9,19 @@ try {
     
     $is_longpost = false;
 
-    foreach ($longpost['raw'] as $annotation) {
-        if ($annotation['type'] === 'nl.chimpnut.blog.post') {
+    foreach ($longpost['raw'] as $raw) {
+        if ($raw['type'] === 'nl.chimpnut.blog.post') {
 
             $is_longpost = true;
             $single_page = true;
 
-            $page_title = htmlentities((empty($annotation['value']['title']) ? (substr($annotation['value']['body'], 0, 42) . '…') : $annotation['value']['title']), ENT_QUOTES) . ' &ndash; Long posts';
-            $page_description = substr($annotation['value']['body'], 0, 256) . '…';
+            $page_title = htmlentities((empty($raw['value']['title']) ? (substr($raw['value']['body'], 0, 42) . '…') : $raw['value']['title']), ENT_QUOTES) . ' &ndash; Long posts';
+            $page_description = substr($raw['value']['body'], 0, 256) . '…';
 
-		if (empty($annotation['value']['title'])) {
+		if (empty($raw['value']['title'])) {
 			$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
 		} else {
-			$title = htmlentities($annotation['value']['title'], ENT_QUOTES);
+			$title = htmlentities($raw['value']['title'], ENT_QUOTES);
 		}
 
             require_once 'header.php';
@@ -35,7 +35,7 @@ try {
             brief_author($longpost, true);
 
             echo '
-            <div class="body">'.$Parsedown->text($annotation['value']['body']).'</div>
+            <div class="body">'.$Parsedown->text($raw['value']['body']).'</div>
             
             <p><strong>Activity</strong> '.$longpost['counts']['replies'].' Replies, '.$longpost['counts']['reposts'].' Reposts, '.$longpost['counts']['bookmarks'].' Bookmarks</p>
             
@@ -47,7 +47,7 @@ try {
             }*/
             
             // Retrieve replies
-            if ($thread = $app->getPostThread($post_id,$params = ['count'=>200,'include_deleted'=>0])) {
+            if ($thread = $app->getPostThread($post_id, ['count'=>200,'include_deleted'=>0])) {
                 array_pop($thread);
                 $thread = array_reverse($thread,true);
                 
