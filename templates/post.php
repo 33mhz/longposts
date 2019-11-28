@@ -88,13 +88,13 @@ try {
 
 			if ($longpost['recent_message']['content']['entities']['tags'] || $longpost['recent_message']['content']['entities']['mentions']) {
 				echo '
-				<p><strong>Tags</strong> ';
+				<p><b>Tags</b> ';
 
 				foreach ($longpost['recent_message']['content']['entities']['tags'] as $tag) {
-					echo '<a href="https://pnut.io/tags/'.$tag['text'].'">#'.$tag['text'].'</a> ';
+					echo '<a href="https://pnut.io/tags/'.$tag['text'].'" target="_blank">#'.$tag['text'].'</a> ';
 				}
 				foreach ($longpost['recent_message']['content']['entities']['mentions'] as $mention) {
-					echo '<a href="https://pnut.io/@'.$mention['text'].'">@'.$mention['text'].'</a> ';
+					echo '<a href="/@'.$mention['text'].'">@'.$mention['text'].'</a> ';
 				}
 
 				echo '</p>';
@@ -103,7 +103,7 @@ try {
 
 			// Retrieve replies
 			if (isset($global_post) && !empty($global_post)) {
-				echo '<p><strong>Activity</strong> '.$global_post['counts']['replies'].' Replies, '.$global_post['counts']['reposts'].' Reposts, '.$global_post['counts']['bookmarks'].' Bookmarks</p>';
+				echo '<p><b>Activity:</b> '.$global_post['counts']['replies'].' Repl' . ($global_post['counts']['replies'] == 1 ? 'y' : 'ies') . ', ' . $global_post['counts']['reposts'] . ' Repost' . ($global_post['counts']['reposts'] == 1 ? '' : 's') . ', ' . $global_post['counts']['bookmarks'] . ' Bookmark' . ($global_post['counts']['bookmarks'] == 1 ? '' : 's') . '</p>';
 
 				if ($thread = $app->getPostThread($global_post['id'],$params = ['count'=>200,'include_deleted'=>0])) {
 					array_pop($thread);

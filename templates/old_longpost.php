@@ -37,7 +37,9 @@ try {
             echo '
             <div class="body">'.$Parsedown->text($raw['value']['body']).'</div>
             
-            <p><strong>Activity</strong> '.$longpost['counts']['replies'].' Replies, '.$longpost['counts']['reposts'].' Reposts, '.$longpost['counts']['bookmarks'].' Bookmarks</p>
+            <p>Written with <a href="' . $longpost['source']['link'] . '">' . $longpost['source']['name'] . '</a>.</p>
+
+            <p><b>Activity:</b> '.$longpost['counts']['replies'].' Repl' . ($longpost['counts']['replies'] == 1 ? 'y' : 'ies') . ', ' . $longpost['counts']['reposts'].' Repost' . ($longpost['counts']['reposts'] == 1 ? '' : 's') . ', ' . $longpost['counts']['bookmarks'].' Bookmark' . ($longpost['counts']['bookmarks'] == 1 ? '' : 's') . '</p>
             
             ';
             /*<p><strong>Tagged</strong> ';

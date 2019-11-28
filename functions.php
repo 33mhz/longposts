@@ -181,13 +181,14 @@ function update_views(int $post_id)
 function author($user)
 {
 	$name = $user['name'] ?? '@'.$user['username'];
+	$html = parse_entities($user['content']['html'], $user['content']['entities']['tags']);
 	
 	echo '
 	<a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['link'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
 	<span class="author-name" style="font-size:150%">'.$name.'</span></a>
 	
 	<div class="author-description" style="height:auto;border-bottom:1px dotted #ccc;padding:1.2em;margin-bottom:1em">
-		'.$user['content']['html'].'
+		'.$html.'
 		<p><a class="author-name" href="https://pnut.io/@'.$user['username'].'" target="_blank">@'.$user['username'].' on Pnut</a></p>
 	</div>
 	';
@@ -239,6 +240,8 @@ function brief_author($longpost, bool $is_post=false)
 	} else {
 		$name = '@'.$longpost[$creator_variable]['username'];
 	}
+
+	$html = parse_entities($longpost[$creator_variable]['content']['html'], $longpost[$creator_variable]['content']['entities']['tags']);
 	
 	echo '
 	<div class="meta-top">
@@ -248,7 +251,7 @@ function brief_author($longpost, bool $is_post=false)
 		<p class="author-permalink" title="'.$created_at.'"><span class="author-tstamp tstamp">'.$rel_created_at.'</span></p>
 		
 		<div class="author-description">
-			'.$longpost[$creator_variable]['content']['html'].'
+			'.$html.'
 			<p><a class="author-name" href="https://pnut.io/@'.$longpost[$creator_variable]['username'].'" target="_blank">@'.$longpost[$creator_variable]['username'].' on Pnut</a></p>
 		</div>
 	</div>
@@ -261,12 +264,12 @@ function reply_content($reply)
 	echo '
 	<div class="reply">
 		<div class="reply-avatar" title="@' . $reply['user']['username'] . '">
-			<a href="https://pnut.io/@'.$reply['user']['username'].'" target="_blank"><img src="'.$reply['user']['content']['avatar_image']['link'].'?w=45&h=45" width="45" height="45"/></a>
+			<a href="/@'.$reply['user']['username'].'"><img src="'.$reply['user']['content']['avatar_image']['link'].'?w=45&h=45" width="45" height="45"/></a>
 		</div>
 
 		<div class="reply-text-area">
 			<div class="reply-username">
-				<a href="https://pnut.io/@'.$reply['user']['username'].'" target="_blank">@'.$reply['user']['username'].'</a>
+				<a href="/@'.$reply['user']['username'].'">@'.$reply['user']['username'].'</a>
 			</div>
 
 			<div class="reply-html">
@@ -288,12 +291,13 @@ function longpost_p_preview($longpost,$include_author) {
 	$Parsedown = new ParsedownExtra();
 	
 	// Make a random guess at reading speed and don't even consider wordage
+	// assumes first raw item!
 	$body_by_word = preg_split('/\s+/', $longpost['raw'][0]['value']['body']);
 	$readingTime = ceil(count($body_by_word) / 175);
 	
 	// Cut previews after a handful of words
-	if (isset($longpost['content']['html']) && !empty($longpost['content']['html'])) {
-		$body_preview = $longpost['content']['html'];
+	if (isset($longpost['content']['html'])) {
+		$body_preview = parse_entities($longpost['content']['html'], $longpost['content']['entities']['tags']);
 	} else {
 		$body_preview = '';
 		$preview_word_count = min(count($body_by_word),70)-1;
@@ -360,8 +364,8 @@ function longpost_preview($longpost,$include_author) {
 	$readingTime = ceil(count($body_by_word) / 175);
 	
 	// Cut previews after a handful of words
-	if (!empty($longpost['recent_message']['content']['html'])) {
-		$body_preview = $longpost['recent_message']['content']['html'];
+	if (isset($longpost['recent_message']['content']['html'])) {
+		$body_preview = parse_entities($longpost['recent_message']['content']['html'], $longpost['recent_message']['content']['entities']['tags']);
 	} else {
 		$body_preview = '';
 		$preview_word_count = min(count($body_by_word),70)-1;
@@ -408,7 +412,7 @@ function longpost_preview($longpost,$include_author) {
 function parse_entities(string $html, array $tags): string
 {
 	// replace mentions
-	$html = preg_replace('/<span data-mention-id="\d+" data-mention-name="\w+" itemprop="mention">(@\w+)<\/span>/', '<a href="https://beta.pnut.io/$1" target="_blank">$1</a>', $html);
+	$html = preg_replace('/<span data-mention-id="\d+" data-mention-name="\w+" itemprop="mention">(@\w+)<\/span>/', '<a href="/$1">$1</a>', $html);
 	// replace tags
 	foreach($tags as $tag) {
 		$html = preg_replace('/<span data-tag-name="' . $tag['text'] . '" itemprop="tag">#(' . $tag['text'] . ')<\/span>/', '<a href="https://beta.pnut.io/tags/$1" target="_blank">#$1</a>', $html);
