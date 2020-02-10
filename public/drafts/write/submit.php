@@ -45,7 +45,7 @@ if (isset($_SESSION['logged_in'])) {
 		$channel_data = $app->getChannel($channel_id, ['include_channel_raw'=>1,'include_message_raw'=>1]);
 
 		$existing_raw = false;
-		foreach($old_channel_data['raw'] as $key => $raw) {
+		foreach($channel_data['raw'] as $key => $raw) {
 			if ($raw['type'] === 'st.longpo.post') {
 				$channel_data['raw'][$key]['value']['category'] = $category;
 				$channel_data['raw'][$key]['value']['title'] = $title;
