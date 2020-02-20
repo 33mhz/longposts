@@ -2,7 +2,7 @@
 
 function get_slug(string $title)
 {
-	$slug = preg_replace('/[^\pL-]/u','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
+	$slug = preg_replace('/[^\pL\d-]/u','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
 	if (strlen($slug) > 150) {
 		$last_break = strpos($slug, '-', 150);
 	}
