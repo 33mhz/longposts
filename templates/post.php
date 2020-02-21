@@ -123,7 +123,11 @@ try {
 
 				<div>
 					<form action="reply.php" method="POST">
-					<p><textarea style="width:100%" name="reply_text" maxlength="256">@'.$longpost['recent_message']['user']['username'].' </textarea></p>
+					<p><textarea style="width:100%" name="reply_text" maxlength="256">';
+					if (strtolower($longpost['recent_message']['user']['id']) !== $_SESSION['user']['id']) {
+						echo '@'.$longpost['recent_message']['user']['username'] . ' ';
+					}
+					echo '</textarea></p>
 
 					<p><button type="submit">Reply</button></p>
 
