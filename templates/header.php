@@ -10,12 +10,12 @@ echo '<!DOCTYPE html>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">';
     if (isset($page_description)) {
-    echo '
-    <meta name="description" content="' . htmlentities($page_description,ENT_QUOTES) . '">';
+        echo '
+        <meta name="description" content="' . htmlentities($page_description,ENT_QUOTES) . '">';
     }
     if (isset($rss_url)) {
-    	echo '
-    	<link rel="alternate" type="application/rss+xml" href="' . $rss_url . '">';
+        echo '
+        <link rel="alternate" type="application/rss+xml" href="' . $rss_url . '">';
     }
     echo '
     <link href="/static/css/main.css?d=20191104" rel="stylesheet"/>

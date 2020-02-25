@@ -91,8 +91,8 @@ if (isset($_GET['id'])) {
 var simplemde = new SimpleMDE({
     autosave: {
         enabled:true,
-        unique_id: 'longpost',
-        delay: 60000
+        uniqueID: 'longpost<?php if (isset($_GET['id']) && is_numeric($_GET['id'])) { echo $_GET['id']; } ?>',
+        delay: 30000
     }
 });
 simplemde.render();
