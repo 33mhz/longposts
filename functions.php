@@ -181,7 +181,11 @@ function update_views(int $post_id)
 function author($user)
 {
 	$name = $user['name'] ?? '@'.$user['username'];
-	$html = parse_entities($user['content']['html'], $user['content']['entities']['tags']);
+	if (isset($user['content']['entities'])) {
+		$html = parse_entities($user['content']['html'], $user['content']['entities']['tags']);
+	} else {
+		$html = '';
+	}
 	
 	echo '
 	<a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['link'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
@@ -241,8 +245,12 @@ function brief_author($longpost, bool $is_post=false)
 		$name = '@'.$longpost[$creator_variable]['username'];
 	}
 
-	$html = parse_entities($longpost[$creator_variable]['content']['html'], $longpost[$creator_variable]['content']['entities']['tags']);
-	
+	if (isset($longpost[$creator_variable]['content']['html'])) {
+		$html = parse_entities($longpost[$creator_variable]['content']['html'], $longpost[$creator_variable]['content']['entities']['tags']);
+	} else {
+		$html = '';
+	}
+
 	echo '
 	<div class="meta-top">
 		<p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
@@ -292,8 +300,15 @@ function longpost_p_preview($longpost,$include_author) {
 	
 	// Make a random guess at reading speed and don't even consider wordage
 	// assumes first raw item!
-	$body_by_word = preg_split('/\s+/', $longpost['raw'][0]['value']['body']);
-	$readingTime = ceil(count($body_by_word) / 175);
+	foreach($longpost['raw'] as $raw) {
+		if ($raw['type'] === 'nl.chimpnut.blog.post' && isset($raw['value']['body'])) {
+			$body_by_word = preg_split('/\s+/', $longpost['raw'][0]['value']['body']);
+			$readingTime = ceil(count($body_by_word) / 175);
+		}
+	}
+	if (!isset($readingTime)) {
+		$readingTime = 0;
+	}
 	
 	// Cut previews after a handful of words
 	if (isset($longpost['content']['html'])) {

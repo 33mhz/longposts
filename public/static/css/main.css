@@ -57,6 +57,17 @@ h1,h2,h3,h4,h5 {
 }
 
 /* UI */
+#navigation {
+    margin-top: 1em;
+    max-width: 48rem;
+    margin: 0 auto;
+}
+.homepage-columns {
+    display: flex;
+}
+.homepage-columns div {
+    padding: 1em;
+}
 #longposts,#longposts a {
 /*    margin-left:1%;
     position: relative;*/
@@ -177,6 +188,11 @@ pre {
 }
 
 /* SINGLE VIEW */
+.nsfw-alert {
+    font-size: 2em;
+    padding: .3em;
+    text-align: center;
+}
 .single-article img {
     max-width:1000px;
 }
@@ -205,6 +221,9 @@ pre {
 @media all and (max-width: 600px) {
     .single-article .title {
         font-size: 1.2em;
+    }
+    .homepage-columns {
+        display: block;
     }
 }
 @media all and (min-width: 900px) {

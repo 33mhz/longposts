@@ -18,11 +18,11 @@ try {
             $page_title = htmlentities((empty($raw['value']['title']) ? (substr($raw['value']['body'], 0, 42) . '…') : $raw['value']['title']), ENT_QUOTES) . ' &ndash; Long posts';
             $page_description = substr($raw['value']['body'], 0, 256) . '…';
 
-		if (empty($raw['value']['title'])) {
-			$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
-		} else {
-			$title = htmlentities($raw['value']['title'], ENT_QUOTES);
-		}
+    		if (empty($raw['value']['title'])) {
+    			$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
+    		} else {
+    			$title = htmlentities($raw['value']['title'], ENT_QUOTES);
+    		}
 
             require_once 'header.php';
             
@@ -33,6 +33,10 @@ try {
             <h2 class="title">'.$title.'</h2>';
 
             brief_author($longpost, true);
+
+            if (isset($longpost['is_nsfw'])) {
+                echo '<p class="nsfw-alert">(This post is marked as Not Safe For Work)</p>';
+            }
 
             echo '
             <div class="body">'.$Parsedown->text($raw['value']['body']).'</div>
