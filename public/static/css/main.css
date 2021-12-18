@@ -185,6 +185,11 @@ h1,h2,h3,h4,h5 {
 
 pre {
     white-space: pre-wrap;
+    background-color: #4a0707;
+    color: #d5d5d5;
+    font-size: 70%;
+    padding: .3em;
+    border-radius: 2px;
 }
 
 /* SINGLE VIEW */
