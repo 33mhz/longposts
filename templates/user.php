@@ -1,7 +1,13 @@
 ﻿<?php
 
 // if user found
-if ($user = $app->getUser($page_key[1])) {
+try {
+	$user = $app->getUser($page_key[1]);
+} catch (Exception $e) {
+	echo '<p>No user found</p>';
+}
+
+if (!empty($user)) {
 
 	$page_key[1] = htmlentities($page_key[1], ENT_QUOTES);
 
@@ -47,6 +53,4 @@ if ($user = $app->getUser($page_key[1])) {
         echo '<p>This user has not published any Long posts.</p>';
     }
     
-} else {
-    echo '<p>No user found</p>';
 }
