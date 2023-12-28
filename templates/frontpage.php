@@ -19,7 +19,7 @@ if (empty($_SESSION['logged_in'])) {
 //usort($longposts, "sortByOrder");
 
 // foreach ($longposts as $longpost) {
-// 	longpost_preview($longpost,1);
+// 	longpost_preview($longpost, true);
 // }
 
 // if (!$longposts) {

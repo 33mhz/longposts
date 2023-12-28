@@ -1,7 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
-\Dotenv\Dotenv::create(__DIR__.'/../../..')->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../..');
+$dotenv->load();
 require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../../functions.php';
 
@@ -10,7 +11,7 @@ $app = new phpnut\ezphpnut();
 // if not logged in as user, use app for calls
 if (isset($_SESSION['logged_in'])) {
 	$app->getSession();
-	
+
 	if (!isset($_SESSION['user'])) {
 		$_SESSION['user'] = $app->getUser();
 	}
@@ -25,35 +26,29 @@ if (isset($_SESSION['logged_in'])) {
 	} else {
 		$description = $_POST['description'];
 	}
-	
+
 	// title
 	$title = $_POST['title'];
 	// body
 	$body = $_POST['body'];
-	
+
 	// category
 	if (empty(trim($_POST['category']))) {
 		$category = '';
 	} else {
 		$category = $_POST['category'];
 	}
-	
+
 	// assemble the channel data
 	if (isset($_POST['channel_id'])) {
 		$channel_id = $_POST['channel_id'];
 
 		$channel_data = $app->getChannel($channel_id, ['include_channel_raw'=>1,'include_message_raw'=>1]);
 
-		$existing_raw = false;
-		foreach($channel_data['raw'] as $key => $raw) {
-			if ($raw['type'] === 'st.longpo.post') {
-				$channel_data['raw'][$key]['value']['category'] = $category;
-				$channel_data['raw'][$key]['value']['title'] = $title;
-				$existing_raw = true;
-				break;
-			}
-		}
-		if (!$existing_raw) {
+		if (isset($channel_data['raw']['st.longpo.post'][0])) {
+			$channel_data['raw']['st.longpo.post'][0]['category'] = $category;
+			$channel_data['raw']['st.longpo.post'][0]['title'] = $title;
+		} else {
 			$channel_data['raw'][] = [
 				'type' => 'st.longpo.post',
 				'value' => [
@@ -66,11 +61,10 @@ if (isset($_SESSION['logged_in'])) {
 		$channel_data = [
 			'type' => 'st.longpo.longpost',
 			'raw' => [
-				[
-					'type' => 'st.longpo.post',
-					'value' => [
+				'st.longpo.post' => [
+					[
 						'title' => $title,
-						'category' => $category
+						'category' => $category,
 					]
 				]
 			]
@@ -89,29 +83,28 @@ if (isset($_SESSION['logged_in'])) {
 			$returns = ['notice'=>'Error updating post: title matches existing post.','status'=>0,'redirect'=>URL.'drafts/write'];
 		}
 	}
-	
+
 	// save draft
 	if ($_POST['type'] === 'save') {
 		// create new channel
 		if ($channel = $app->createChannel($channel_data)) {
 			$channel_id = $channel['id'];
-		
+
 			// create message
 			$app->createMessage(
 				$channel_id,
 				[
 					'text' => $description,
 					'raw' => [
-						[
-							'type' => 'st.longpo.content',
-							'value' => [
+						'st.longpo.content' => [
+							[
 								'body' => $body
 							]
 						]
 					]
 				]
 			);
-			
+
 			// Go to new post
 			$_SESSION['POS_NOTICE'][] = 'Created new post!';
 			$returns = ['notice'=>'Created new post.','status'=>1,'redirect'=>URL.$channel_id];
@@ -129,13 +122,13 @@ if (isset($_SESSION['logged_in'])) {
 			'public' => true,
 			'user_ids' => [],
 		];
-		
+
 		// publish new post
 		if (!isset($_POST['channel_id'])) {
 			// create new channel
 			if ($channel = $app->createChannel($channel_data)) {
 				$channel_id = $channel['id'];
-				
+
 				// create message
 				$app->createMessage(
 					$channel_id,
@@ -151,7 +144,7 @@ if (isset($_SESSION['logged_in'])) {
 						]
 					]
 				);
-				
+
 				$_SESSION['POS_NOTICE'][] = 'Created new post.';
 				$returns = ['notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id];
 			} else {
@@ -177,7 +170,7 @@ if (isset($_SESSION['logged_in'])) {
 						]
 					]
 				);
-				
+
 				$_SESSION['POS_NOTICE'][] = 'Created new post.';
 				$returns = ['notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id];
 			} else {
@@ -189,23 +182,22 @@ if (isset($_SESSION['logged_in'])) {
 	// save updated draft
 	else if ($_POST['type'] === 'update') {
 		// update channel
-		if ($channel = $app->updateChannel($channel_id,$channel_data)) {
+		if ($channel = $app->updateChannel($channel_id, $channel_data)) {
 			// create message
 			$message = $app->createMessage(
 				$channel_id,
 				[
 					'text' => $description,
 					'raw' => [
-						[
-							'type' => 'st.longpo.content',
-							'value' => [
+						'st.longpo.content' => [
+							[
 								'body' => $body
 							]
 						]
 					]
 				]
 			);
-			
+
 			$_SESSION['POS_NOTICE'][] = 'Updated draft.';
 			$returns = ['notice'=>'Updated draft.','status'=>1,'redirect'=>URL.$channel_id];
 		} else {
@@ -224,18 +216,18 @@ if (isset($_SESSION['logged_in'])) {
 		];
 
 		// delete Global post if exists
-		if (!empty($channel_data['raw'][0]['value']['global_post_id'])) {
+		if (!empty($channel_data['raw']['st.longpo.post'][0]['global_post_id'])) {
 			try {
-				$app->deletePost($channel_data['raw'][0]['value']['global_post_id']);
+				$app->deletePost($channel_data['raw']['st.longpo.post'][0]['global_post_id']);
 			} catch (Exception $e) {
 				// @TODO catch this
 			}
 
-			$channel_data['raw'][0]['value']['global_post_id'] = '';
+			$channel_data['raw']['st.longpo.post'][0]['global_post_id'] = '';
 		}
-		
+
 		// update channel
-		if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
+		if ($channel_data = $app->updateChannel($channel_id, $channel_data)) {
 			$_SESSION['POS_NOTICE'][] = 'Made post private.';
 			$returns = array('notice'=>'Made post private.','status'=>1,'redirect'=>URL.$channel_id);
 		} else {
@@ -246,14 +238,14 @@ if (isset($_SESSION['logged_in'])) {
 	// delete post!
 	else if ($_POST['type'] === 'delete') {
 		// delete Global post if exists
-		if (!empty($channel_data['raw'][0]['value']['global_post_id'])) {
+		if (!empty($channel_data['raw']['st.longpo.post'][0]['global_post_id'])) {
 			try {
-				$app->deletePost($channel_data['raw'][0]['value']['global_post_id']);
+				$app->deletePost($channel_data['raw']['st.longpo.post'][0]['global_post_id']);
 			} catch (Exception $e) {
 				// @TODO catch this?
 			}
 		}
-		
+
 		// deactivate channel
 		if ($app->deleteChannel($channel_id)) {
 			$_SESSION['POS_NOTICE'][] = 'Deleted post.';
@@ -281,9 +273,8 @@ if (isset($_SESSION['logged_in'])) {
 			$text,
 			[
 				'raw' => [
-					[
-						'type' => 'st.longpo.broadcast',
-						'value' => [
+					'st.longpo.broadcast' => [
+						[
 							'longpost_id' => $channel_id
 						]
 					]
@@ -295,10 +286,10 @@ if (isset($_SESSION['logged_in'])) {
 			$last_update = $channel_data['raw'];
 			$channel_data = [];
 			$channel_data['raw'] = $last_update;
-			$channel_data['raw'][0]['value']['global_post_id'] = $broadcast_post['id'];
+			$channel_data['raw']['st.longpo.post'][0]['global_post_id'] = $broadcast_post['id'];
 
 			// update channel to reflect the broadcast post
-			if ($channel_data = $app->updateChannel($channel_id,$channel_data)) {
+			if ($channel_data = $app->updateChannel($channel_id, $channel_data)) {
 				$_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="https://beta.pnut.io/posts/'.$broadcast_post['id'].'" target="_blank">to Global</a>.';
 				$returns = array('notice'=>'Broadcasted post <a href="https://beta.pnut.io/posts/'.$broadcast_post['id'].'" target="_blank">to Global</a>.','status'=>1,'redirect'=>URL.$channel_id);
 			} else {
@@ -307,7 +298,7 @@ if (isset($_SESSION['logged_in'])) {
 			}
 		}
 	}
-	
+
 	// Go to published post
 	//header('Location: '.URL.$channel_id);
 	echo json_encode($returns);

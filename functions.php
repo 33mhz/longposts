@@ -188,7 +188,7 @@ function author($user)
 	}
 
 	echo '
-	<a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['link'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
+	<a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['url'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
 	<span class="author-name" style="font-size:150%">'.$name.'</span></a>
 
 	<div class="author-description" style="height:auto;border-bottom:1px dotted #ccc;padding:1.2em;margin-bottom:1em">
@@ -231,22 +231,20 @@ function rel_time(string $created_at, bool $full = false)
 function brief_author($longpost, bool $is_post=false)
 {
 	if ($is_post) {
-		$creator_variable = 'user';
 		$created_at = $longpost['created_at'];
 	} else {
-		$creator_variable = 'owner';
 		$created_at = $longpost['recent_message']['created_at'];
 	}
 	$rel_created_at = rel_time($created_at);
 
-	if (isset($longpost[$creator_variable]['name'])) {
-		$name = $longpost[$creator_variable]['name'];
+	if (isset($longpost['user']['name'])) {
+		$name = $longpost['user']['name'];
 	} else {
-		$name = '@'.$longpost[$creator_variable]['username'];
+		$name = '@'.$longpost['user']['username'];
 	}
 
-	if (isset($longpost[$creator_variable]['content']['html'])) {
-		$html = parse_entities($longpost[$creator_variable]['content']['html'], $longpost[$creator_variable]['content']['entities']['tags']);
+	if (isset($longpost['user']['content']['html'])) {
+		$html = parse_entities($longpost['user']['content']['html'], $longpost['user']['content']['entities']['tags']);
 	} else {
 		$html = '';
 	}
@@ -254,13 +252,13 @@ function brief_author($longpost, bool $is_post=false)
 	echo '
 	<div class="meta-top">
 		<p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
-		<a href="/'.'@'.$longpost[$creator_variable]['username'].'"><img class="author-avatar" src="'.$longpost[$creator_variable]['content']['avatar_image']['link'].'?w=45&h=45" title="@'.$longpost[$creator_variable]['username'].'"/>
+		<a href="/'.'@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['content']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
 		<span class="author-name">'.$name.'</span></a>
 		<p class="author-permalink" title="'.$created_at.'"><span class="author-tstamp tstamp">'.$rel_created_at.'</span></p>
 
 		<div class="author-description">
 			'.$html.'
-			<p><a class="author-name" href="https://pnut.io/@'.$longpost[$creator_variable]['username'].'" target="_blank">@'.$longpost[$creator_variable]['username'].' on Pnut</a></p>
+			<p><a class="author-name" href="https://pnut.io/@'.$longpost['user']['username'].'" target="_blank">@'.$longpost['user']['username'].' on Pnut</a></p>
 		</div>
 	</div>
 	';
@@ -272,7 +270,7 @@ function reply_content($reply)
 	echo '
 	<div class="reply">
 		<div class="reply-avatar" title="@' . $reply['user']['username'] . '">
-			<a href="/@'.$reply['user']['username'].'"><img src="'.$reply['user']['content']['avatar_image']['link'].'?w=45&h=45" width="45" height="45"/></a>
+			<a href="/@'.$reply['user']['username'].'"><img src="'.$reply['user']['content']['avatar_image']['url'].'?w=45&h=45" width="45" height="45"/></a>
 		</div>
 
 		<div class="reply-text-area">
@@ -288,7 +286,7 @@ function reply_content($reply)
 	';
 }
 
-function longpost_p_preview($longpost,$include_author) {
+function longpost_p_preview($longpost, bool $include_author) {
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
 	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$longpost['id']);
@@ -300,11 +298,9 @@ function longpost_p_preview($longpost,$include_author) {
 
 	// Make a random guess at reading speed and don't even consider wordage
 	// assumes first raw item!
-	foreach($longpost['raw'] as $raw) {
-		if ($raw['type'] === 'nl.chimpnut.blog.post' && isset($raw['value']['body'])) {
-			$body_by_word = preg_split('/\s+/', $raw['value']['body']);
-			$readingTime = ceil(count($body_by_word) / 175);
-		}
+	if (isset($longpost['raw']['nl.chimpnut.blog.post'][0]['body'])) {
+		$body_by_word = preg_split('/\s+/', $longpost['raw']['nl.chimpnut.blog.post'][0]['body']);
+		$readingTime = ceil(count($body_by_word) / 175);
 	}
 	if (!isset($readingTime)) {
 		$readingTime = 0;
@@ -325,8 +321,8 @@ function longpost_p_preview($longpost,$include_author) {
 	}
 
 	// retrieve global post
-	/*if (isset($longpost['raw'][0]['value']['global_post_id'])) {
-		$global_post = $app->getPost($longpost['raw'][0]['value']['global_post_id']);
+	/*if (isset($longpost['raw']['st.longpo.post'][0]['global_post_id'])) {
+		$global_post = $app->getPost($longpost['raw']['st.longpo.post'][0]['global_post_id']);
 
 		// discussion indicator
 		if ($global_post['num_replies'] == '0') {
@@ -339,10 +335,11 @@ function longpost_p_preview($longpost,$include_author) {
 	//}
 	$rel_created_at = rel_time($longpost['created_at']);
 
-	if (empty($longpost['raw'][0]['value']['title'])) {
-		$title = strftime('%Y-%m-%d', strtotime($longpost['created_at']));
+	if (empty($longpost['raw']['nl.chimpnut.blog.post'][0]['title'])) {
+		$title_time = new DateTime($longpost['created_at']);
+		$title = $title_time->format('Y-m-d');
 	} else {
-		$title = $longpost['raw'][0]['value']['title'];
+		$title = $longpost['raw']['nl.chimpnut.blog.post'][0]['title'];
 	}
 
 	echo '
@@ -362,7 +359,7 @@ function longpost_p_preview($longpost,$include_author) {
 	';
 }
 
-function longpost_preview($longpost,$include_author) {
+function longpost_preview($longpost, bool $include_author) {
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
 	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = :post_id');
@@ -375,7 +372,7 @@ function longpost_preview($longpost,$include_author) {
 
 	// Make a random guess at reading speed and don't even consider wordage
 	// assumes first raw item!
-	$body_by_word = preg_split('/\s+/', $longpost['recent_message']['raw'][0]['value']['body']);
+	$body_by_word = preg_split('/\s+/', $longpost['recent_message']['raw']['st.longpo.content'][0]['body']);
 	$readingTime = ceil(count($body_by_word) / 175);
 
 	// Cut previews after a handful of words
@@ -393,8 +390,8 @@ function longpost_preview($longpost,$include_author) {
 	}
 
 	// retrieve global post
-	/*if (isset($longpost['raw'][0]['value']['global_post_id'])) {
-		$global_post = $app->getPost($longpost['raw'][0]['value']['global_post_id']);
+	/*if (isset($longpost['raw']['st.longpo.post'][0]['global_post_id'])) {
+		$global_post = $app->getPost($longpost['raw']['st.longpo.post'][0]['global_post_id']);
 
 		// discussion indicator
 		if ($global_post['num_replies'] == '0') {
@@ -410,7 +407,7 @@ function longpost_preview($longpost,$include_author) {
 	echo '
 
 	<div class="article" id="post-'.$longpost['id'].'">
-		<h2 class="title"><a href="/' . $longpost['id'].'">'.htmlentities($longpost['raw'][0]['value']['title'],ENT_QUOTES).'</a></h2>';
+		<h2 class="title"><a href="/' . $longpost['id'].'">'.htmlentities($longpost['raw']['st.longpo.post'][0]['title'], ENT_QUOTES).'</a></h2>';
 		if ($include_author) {
 			echo brief_author($longpost);
 		} else {

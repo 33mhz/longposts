@@ -11,7 +11,7 @@ echo '<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1">';
     if (isset($page_description)) {
         echo '
-        <meta name="description" content="' . htmlentities($page_description,ENT_QUOTES) . '">';
+        <meta name="description" content="' . htmlentities($page_description, ENT_QUOTES) . '">';
     }
     if (isset($rss_url)) {
         echo '

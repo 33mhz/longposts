@@ -2,7 +2,8 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-\Dotenv\Dotenv::create(__DIR__.'/../..')->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+$dotenv->load();
 
 require_once __DIR__ . '/../../config.php';
 require_once '../../functions.php';
@@ -39,28 +40,28 @@ require_once '../../templates/header.php';
 $Parsedown = new ParsedownExtra();
 
 // get drafts
-$longposts = $app->searchChannels($params = ['channel_types'=>'st.longpo.longpost','creator_id'=>$_SESSION['user']['id'],'is_private'=>1,'include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
+$longposts = $app->searchChannels($params = ['channel_types'=>'st.longpo.longpost','owner_id'=>$_SESSION['user']['id'],'is_public'=>0,'include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
 
 
 echo '<h2>Private</h2>';
 foreach($longposts as $longpost) {
-    
+
     echo '
-    
+
     <div id="post-'.$longpost['id'].'" class="article">
         <a href="/'.'drafts/write?id='.$longpost['id'].'" style="float:right"><button type="button">Edit</button></a>
-        <h3><a href="/'.$longpost['id'].'">'.$longpost['raw'][0]['value']['title'].'</a></h3>
+        <h3><a href="/'.$longpost['id'].'">'.$longpost['raw']['st.longpo.post'][0]['title'].'</a></h3>
         <p>'.$Parsedown->text($longpost['recent_message']['content']['html']).'</p>
     </div>
-    
+
     ';
 }
 
 if (count($longposts) == 0) {
     echo '
-        
+
         <p>You have no private posts.</p>
-        
+
     ';
 }
 

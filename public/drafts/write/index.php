@@ -2,7 +2,8 @@
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-\Dotenv\Dotenv::create(__DIR__.'/../../..')->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../..');
+$dotenv->load();
 
 require_once __DIR__ . '/../../../config.php';
 
@@ -35,17 +36,18 @@ $page_title = 'Long posts &ndash; Write';
 require_once '../../../templates/header.php';
 
 if (isset($_GET['id'])) {
-    $channel = $app->getChannel($_GET['id'],['include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
-    $title = $channel['raw'][0]['value']['title'];
-    $body = $channel['recent_message']['raw'][0]['value']['body'];
+    $channel = $app->getChannel($_GET['id'], ['include_recent_message'=>1,'include_channel_raw'=>1,'include_message_raw'=>1]);
+    // print_r($channel['recent_message']['raw']);
+    $title = $channel['raw']['st.longpo.post'][0]['title'];
+    $body = $channel['recent_message']['raw']['st.longpo.content'][0]['body'];
     $description = $channel['recent_message']['content']['text'];
     $is_published = $channel['acl']['read']['public'];
-    if (!empty($channel['raw'][0]['value']['category'])) {
-        $category = $channel['raw'][0]['value']['category'];
+    if (!empty($channel['raw']['st.longpo.post'][0]['category'])) {
+        $category = $channel['raw']['st.longpo.post'][0]['category'];
     } else {
         $category = '';
     }
-    if (!empty($channel['raw'][0]['value']['global_post_id'])) {
+    if (!empty($channel['raw']['st.longpo.post'][0]['global_post_id'])) {
         $broadcast = '';
     } else {
         $broadcast = ' <p><label><input type="checkbox" class="broadcast" name="broadcast" checked/> Broadcast Post to Global (and allow replies)</label></p>';
@@ -67,7 +69,7 @@ if (isset($_GET['id'])) {
     <textarea id="editor" name="post_body" placeholder="Content here ...." maxlength="8400"><?php echo $body; ?></textarea>
 
     <p><label>Category: <input type="text" id="category" name="category" placeholder="Optional" value="<?php echo $category; ?>" /></label></p>
-    
+
     <p><label>Description: <textarea name="post_description" id="description" placeholder="Optional description/subheading" maxlength="244" style="width:100%"><?php echo $description; ?></textarea></label></p>
 
     <?php
@@ -114,7 +116,7 @@ function save_form(which) {
     } else if (which == 6) {
         var type = 'publish';
     }
-    
+
     if (typeof $('.broadcast')[0] !== 'undefined' && $('.broadcast')[0].checked == true) {
         var broadcast = 1;
     } else {

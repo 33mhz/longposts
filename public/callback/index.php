@@ -2,7 +2,8 @@
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-\Dotenv\Dotenv::create(__DIR__.'/../..')->load();
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../..');
+$dotenv->load();
 
 require_once __DIR__ . '/../../config.php';
 
@@ -21,4 +22,4 @@ if (isset($_SESSION['rem'])) {
 	$token = $app->setSession();
 }
 // redirect user after logging in
-header('Location: '.URL.substr($_SESSION['last_url'],1));
+header('Location: '.URL.substr($_SESSION['last_url'], 1));
