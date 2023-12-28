@@ -23,7 +23,7 @@ try {
 
 	$longpost = $app->getChannel($channel_id,['include_channel_raw'=>1,'include_message_raw'=>1,'include_recent_message'=>1]);
 
-	if ($longpost['type'] !== 'st.longpo.longpost') {
+	if ($longpost['type'] !== 'st.longpo.longpost' || empty($longpost['recent_message'])) {
 		// set notification
 		$_SESSION['NEG_NOTICE'][] = 'No long post found.';
 		// redirect to index
@@ -135,7 +135,7 @@ try {
 					<input type="hidden" name="longpost_id" value="'.$longpost['id'].'"/>
 					</form>
 				</div>
-				
+
 				';
 				} else {
 					echo '
