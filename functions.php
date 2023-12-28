@@ -19,7 +19,7 @@ function entry_exists(string $title, int $user_id, $channel_id=false)
 {
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
-	
+
 	// normalize slug
 	$slug = preg_replace('/[^\w-]/','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
 	if (strlen($slug) > 150) {
