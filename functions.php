@@ -294,22 +294,22 @@ function longpost_p_preview($longpost,$include_author) {
 	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$longpost['id']);
 	$sth->execute();
 	$views = $sth->fetch()[0];
-	
+
 	// Markdown parser
 	$Parsedown = new ParsedownExtra();
-	
+
 	// Make a random guess at reading speed and don't even consider wordage
 	// assumes first raw item!
 	foreach($longpost['raw'] as $raw) {
 		if ($raw['type'] === 'nl.chimpnut.blog.post' && isset($raw['value']['body'])) {
-			$body_by_word = preg_split('/\s+/', $longpost['raw'][0]['value']['body']);
+			$body_by_word = preg_split('/\s+/', $raw['value']['body']);
 			$readingTime = ceil(count($body_by_word) / 175);
 		}
 	}
 	if (!isset($readingTime)) {
 		$readingTime = 0;
 	}
-	
+
 	// Cut previews after a handful of words
 	if (isset($longpost['content']['html'])) {
 		$body_preview = parse_entities($longpost['content']['html'], $longpost['content']['entities']['tags']);
