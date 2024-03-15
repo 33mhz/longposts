@@ -38,6 +38,10 @@ if (isset($_SESSION['logged_in'])) {
 $post_id = basename("https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 $url = $_SERVER['REQUEST_URI'];
 $url = parse_url($_SERVER['REQUEST_URI']);
+if (empty($url['path'])) {
+    header('location: ' . URL);
+    exit;
+}
 $page_key = explode('/',$url['path']);
 
 // what page are we viewing?
@@ -56,7 +60,7 @@ if (!empty($page_key[1])) {
     } else if ($page_key[1] == 'category') {
         // category
         require_once '../templates/category.php';
-    } else if ($page_key[1] == 'p') {
+    } else if ($page_key[1] == 'p' && isset($page_key[2]) && is_numeric($page_key[2])) {
         // OLD longposts
         require_once '../templates/old_longpost.php';
     }
