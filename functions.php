@@ -181,7 +181,7 @@ function update_views(int $post_id)
 function author($user)
 {
 	$name = $user['name'] ?? '@'.$user['username'];
-	if (isset($user['content']['entities'])) {
+	if (isset($user['content']['entities'], $user['content']['html'])) {
 		$html = parse_entities($user['content']['html'], $user['content']['entities']['tags']);
 	} else {
 		$html = '';
