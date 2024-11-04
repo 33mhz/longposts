@@ -16,8 +16,8 @@ if (isset($_SESSION['logged_in'])) {
 		$_SESSION['user'] = $app->getUser();
 	}
 
-	if (!isset($_POST['body'],$_POST['title'])) {
-		header('Location: '.URL.'drafts');
+	if (!isset($_POST['body'], $_POST['title'])) {
+		header('Location: ' . URL . 'drafts');
 	}
 
 	// description
@@ -43,18 +43,15 @@ if (isset($_SESSION['logged_in'])) {
 	if (isset($_POST['channel_id'])) {
 		$channel_id = $_POST['channel_id'];
 
-		$channel_data = $app->getChannel($channel_id, ['include_channel_raw'=>1,'include_message_raw'=>1]);
+		$channel_data = $app->getChannel($channel_id, ['include_channel_raw' => 1, 'include_message_raw' => 1]);
 
 		if (isset($channel_data['raw']['st.longpo.post'][0])) {
 			$channel_data['raw']['st.longpo.post'][0]['category'] = $category;
 			$channel_data['raw']['st.longpo.post'][0]['title'] = $title;
 		} else {
-			$channel_data['raw'][] = [
-				'type' => 'st.longpo.post',
-				'value' => [
-					'title' => $title,
-					'category' => $category
-				]
+			$channel_data['raw']['st.longpo.post'][0] = [
+				'title' => $title,
+				'category' => $category
 			];
 		}
 	} else {
@@ -75,12 +72,12 @@ if (isset($_SESSION['logged_in'])) {
 	if ($_POST['type'] === 'save') {
 		if (entry_exists($title, $_SESSION['user']['id'])) {
 			$_SESSION['NEG_NOTICE'][] = 'Error creating post: title matches existing post.';
-			$returns = ['notice'=>'Error creating post: title matches existing post.','status'=>0,'redirect'=>URL.'drafts/write'];
+			$returns = ['notice' => 'Error creating post: title matches existing post.', 'status' => 0, 'redirect' => URL . 'drafts/write'];
 		}
 	} else {
 		if (entry_exists($title, $_SESSION['user']['id'], $channel_id)) {
 			$_SESSION['NEG_NOTICE'][] = 'Error updating post: title matches existing post.';
-			$returns = ['notice'=>'Error updating post: title matches existing post.','status'=>0,'redirect'=>URL.'drafts/write'];
+			$returns = ['notice' => 'Error updating post: title matches existing post.', 'status' => 0, 'redirect' => URL . 'drafts/write'];
 		}
 	}
 
@@ -107,10 +104,10 @@ if (isset($_SESSION['logged_in'])) {
 
 			// Go to new post
 			$_SESSION['POS_NOTICE'][] = 'Created new post!';
-			$returns = ['notice'=>'Created new post.','status'=>1,'redirect'=>URL.$channel_id];
+			$returns = ['notice' => 'Created new post.', 'status' => 1, 'redirect' => URL . $channel_id];
 		} else {
 			$_SESSION['NEG_NOTICE'][] = "Error creating post.";
-			$returns = ['notice'=>'Error creating post.','status'=>0,'redirect'=>URL.'drafts/write'];
+			$returns = ['notice' => 'Error creating post.', 'status' => 0, 'redirect' => URL . 'drafts/write'];
 		}
 	}
 	// publish
@@ -135,9 +132,8 @@ if (isset($_SESSION['logged_in'])) {
 					[
 						'text' => $description,
 						'raw' => [
-							[
-								'type' => 'st.longpo.content',
-								'value' => [
+							'st.longpo.content' => [
+								[
 									'body' => $body
 								]
 							]
@@ -146,10 +142,10 @@ if (isset($_SESSION['logged_in'])) {
 				);
 
 				$_SESSION['POS_NOTICE'][] = 'Created new post.';
-				$returns = ['notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id];
+				$returns = ['notice' => 'Published post.', 'status' => 1, 'redirect' => URL . $channel_id];
 			} else {
 				$_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
-				$returns = ['notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id];
+				$returns = ['notice' => 'Error publishing post.', 'status' => 0, 'redirect' => URL . $channel_id];
 			}
 		}
 		// publish draft
@@ -161,9 +157,8 @@ if (isset($_SESSION['logged_in'])) {
 					[
 						'text' => $description,
 						'raw' => [
-							[
-								'type' => 'st.longpo.content',
-								'value' => [
+							'st.longpo.content' => [
+								[
 									'body' => $body
 								]
 							]
@@ -172,10 +167,10 @@ if (isset($_SESSION['logged_in'])) {
 				);
 
 				$_SESSION['POS_NOTICE'][] = 'Created new post.';
-				$returns = ['notice'=>'Published post.','status'=>1,'redirect'=>URL.$channel_id];
+				$returns = ['notice' => 'Published post.', 'status' => 1, 'redirect' => URL . $channel_id];
 			} else {
 				$_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
-				$returns = ['notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id];
+				$returns = ['notice' => 'Error publishing post.', 'status' => 0, 'redirect' => URL . $channel_id];
 			}
 		}
 	}
@@ -199,10 +194,10 @@ if (isset($_SESSION['logged_in'])) {
 			);
 
 			$_SESSION['POS_NOTICE'][] = 'Updated draft.';
-			$returns = ['notice'=>'Updated draft.','status'=>1,'redirect'=>URL.$channel_id];
+			$returns = ['notice' => 'Updated draft.', 'status' => 1, 'redirect' => URL . $channel_id];
 		} else {
 			$_SESSION['NEG_NOTICE'][] = 'Error publishing post.';
-			$returns = ['notice'=>'Error publishing post.','status'=>0,'redirect'=>URL.$channel_id];
+			$returns = ['notice' => 'Error publishing post.', 'status' => 0, 'redirect' => URL . $channel_id];
 		}
 	}
 	// make private
@@ -229,10 +224,10 @@ if (isset($_SESSION['logged_in'])) {
 		// update channel
 		if ($channel_data = $app->updateChannel($channel_id, $channel_data)) {
 			$_SESSION['POS_NOTICE'][] = 'Made post private.';
-			$returns = array('notice'=>'Made post private.','status'=>1,'redirect'=>URL.$channel_id);
+			$returns = array('notice' => 'Made post private.', 'status' => 1, 'redirect' => URL . $channel_id);
 		} else {
 			$_SESSION['NEG_NOTICE'][] = 'Error making post private.';
-			$returns = array('notice'=>'Error making post private.','status'=>0,'redirect'=>URL.$channel_id);
+			$returns = array('notice' => 'Error making post private.', 'status' => 0, 'redirect' => URL . $channel_id);
 		}
 	}
 	// delete post!
@@ -249,10 +244,10 @@ if (isset($_SESSION['logged_in'])) {
 		// deactivate channel
 		if ($app->deleteChannel($channel_id)) {
 			$_SESSION['POS_NOTICE'][] = 'Deleted post.';
-			$returns = array('notice'=>'Deleted post.','status'=>1,'redirect'=>URL.'drafts');
+			$returns = array('notice' => 'Deleted post.', 'status' => 1, 'redirect' => URL . 'drafts');
 		} else {
 			$_SESSION['NEG_NOTICE'][] = 'Couldn\'t delete!';
-			$returns = array('notice'=>'Couldn\'t delete!','status'=>0,'redirect'=>URL.$channel_id);
+			$returns = array('notice' => 'Couldn\'t delete!', 'status' => 0, 'redirect' => URL . $channel_id);
 		}
 	}
 
@@ -263,9 +258,9 @@ if (isset($_SESSION['logged_in'])) {
 
 	// Handle broadcasting
 	if (!empty($_POST['broadcast']) && ((!empty($channel_data['acl']['read']['public']) && $_POST['type'] === 'update') || $_POST['type'] === 'publish')) {
-		$text = '['.$_POST['title'].'](https://longpo.st/'.$channel_id.')';
-		if (!empty($_POST['description']) && strlen($text . "\n".$_POST['description']."\n#longpost") <= 256) {
-			$text .= "\n".$_POST['description']."\n#longpost";
+		$text = '[' . $_POST['title'] . '](https://longpo.st/' . $channel_id . ')';
+		if (!empty($_POST['description']) && strlen($text . "\n" . $_POST['description'] . "\n#longpost") <= 256) {
+			$text .= "\n" . $_POST['description'] . "\n#longpost";
 		}
 		// create broadcast post to global
 		// allow custom post!
@@ -290,11 +285,11 @@ if (isset($_SESSION['logged_in'])) {
 
 			// update channel to reflect the broadcast post
 			if ($channel_data = $app->updateChannel($channel_id, $channel_data)) {
-				$_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="https://beta.pnut.io/posts/'.$broadcast_post['id'].'" target="_blank">to Global</a>.';
-				$returns = array('notice'=>'Broadcasted post <a href="https://beta.pnut.io/posts/'.$broadcast_post['id'].'" target="_blank">to Global</a>.','status'=>1,'redirect'=>URL.$channel_id);
+				$_SESSION['POS_NOTICE'][] = 'Broadcasted post <a href="https://beta.pnut.io/posts/' . $broadcast_post['id'] . '" target="_blank">to Global</a>.';
+				$returns = array('notice' => 'Broadcasted post <a href="https://beta.pnut.io/posts/' . $broadcast_post['id'] . '" target="_blank">to Global</a>.', 'status' => 1, 'redirect' => URL . $channel_id);
 			} else {
 				$_SESSION['NEG_NOTICE'][] = 'Error broadcasting to Global.';
-				$returns = array('notice'=>'Error broadcasting to Global.','status'=>0,'redirect'=>URL.$channel_id);
+				$returns = array('notice' => 'Error broadcasting to Global.', 'status' => 0, 'redirect' => URL . $channel_id);
 			}
 		}
 	}
@@ -302,9 +297,8 @@ if (isset($_SESSION['logged_in'])) {
 	// Go to published post
 	//header('Location: '.URL.$channel_id);
 	echo json_encode($returns);
-
 } else {
 	unset($_SESSION['user']);
-	$returns = array('notice'=>'Not logged in!','status'=>0,'redirect'=>URL);
+	$returns = array('notice' => 'Not logged in!', 'status' => 0, 'redirect' => URL);
 	echo json_encode($returns);
 }
