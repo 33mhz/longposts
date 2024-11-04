@@ -2,7 +2,7 @@
 
 function get_slug(string $title)
 {
-	$slug = preg_replace('/[^\pL\d-]/u','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
+	$slug = preg_replace('/[^\pL\d-]/u', '', str_replace(['_', ' ', '&'], ['-', '-', 'and'], strtolower(trim($title))));
 	if (strlen($slug) > 150) {
 		$last_break = strpos($slug, '-', 150);
 	}
@@ -11,17 +11,17 @@ function get_slug(string $title)
 	} else {
 		$slug = substr($slug, 0, 150);
 	}
-	$slug = trim($slug,'-');
+	$slug = trim($slug, '-');
 	return $slug;
 }
 
-function entry_exists(string $title, int $user_id, $channel_id=false)
+function entry_exists(string $title, int $user_id, $channel_id = false)
 {
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
 
 	// normalize slug
-	$slug = preg_replace('/[^\w-]/','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
+	$slug = preg_replace('/[^\w-]/', '', str_replace(['_', ' ', '&'], ['-', '-', 'and'], strtolower(trim($title))));
 	if (strlen($slug) > 150) {
 		$last_break = strpos($slug, '-', 150);
 	}
@@ -30,7 +30,7 @@ function entry_exists(string $title, int $user_id, $channel_id=false)
 	} else {
 		$slug = substr($slug, 0, 150);
 	}
-	$slug = trim($slug,'-');
+	$slug = trim($slug, '-');
 
 	// check if post ID has a recorded category
 	$sth = $db->prepare('SELECT post_id FROM categories WHERE slug = :slug AND user_id = :user_id LIMIT 1');
@@ -52,7 +52,7 @@ function update_entry(int $channel_id, string $category, string $title, string $
 	$db = new PDO(DBHOST, DBUSER, DBPASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
 	// normalize slug
-	$slug = preg_replace('/[^\w-]/','',str_replace(['_',' ','&'],['-','-','and'],strtolower(trim($title))));
+	$slug = preg_replace('/[^\w-]/', '', str_replace(['_', ' ', '&'], ['-', '-', 'and'], strtolower(trim($title))));
 	if (strlen($slug) > 150) {
 		$last_break = strpos($slug, '-', 150);
 	}
@@ -61,11 +61,11 @@ function update_entry(int $channel_id, string $category, string $title, string $
 	} else {
 		$slug = substr($slug, 0, 150);
 	}
-	$slug = trim($slug,'-');
+	$slug = trim($slug, '-');
 
 	// check if post ID has a recorded category
 	$sth = $db->prepare('SELECT post_id, category, slug, username, user_id FROM categories WHERE post_id = :post_id LIMIT 1');
-	$sth->execute([':post_id'=>$channel_id]);
+	$sth->execute([':post_id' => $channel_id]);
 	$channel_exists = $sth->fetch();
 
 	// if channel doesn't have record, insert
@@ -84,11 +84,11 @@ function update_entry(int $channel_id, string $category, string $title, string $
 		// if channel hasn't been recorded with this category, update
 		$query = $db->prepare('UPDATE categories SET category = :category, slug=:slug, username=:username, user_id=:user_id WHERE post_id = :post_id');
 		$query->execute([
-				':category' => $category,
-				':slug' => $slug,
-				':username' => strtolower($username),
-				':user_id' => $user_id,
-				':post_id' => $channel_id,
+			':category' => $category,
+			':slug' => $slug,
+			':username' => strtolower($username),
+			':user_id' => $user_id,
+			':post_id' => $channel_id,
 		]);
 	}
 }
@@ -104,7 +104,7 @@ function get_category_ids(string $category)
 	$category_ids = $sth->fetchAll();
 
 	$channel_ids = [];
-	foreach($category_ids as $category_id) {
+	foreach ($category_ids as $category_id) {
 		$channel_ids[] = $category_id['post_id'];
 	}
 
@@ -130,7 +130,7 @@ function update_views(int $post_id)
 
 	// get view count
 	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = :post_id');
-	$sth->execute([':post_id'=>$post_id]);
+	$sth->execute([':post_id' => $post_id]);
 	$views = $sth->fetch()[0];
 	$ip = str_replace('.', '', getIp());
 
@@ -140,7 +140,7 @@ function update_views(int $post_id)
 	if ($views > 0) {
 		// get visits from this IP
 		$sth = $db->prepare('SELECT * FROM views WHERE post_id = :post_id AND ip = :ip');
-		$sth->execute([':post_id'=>$post_id, ':ip'=>$ip]);
+		$sth->execute([':post_id' => $post_id, ':ip' => $ip]);
 		$by_ip = $sth->fetchAll();
 		$by_ip_count = $sth->rowCount();
 
@@ -180,7 +180,7 @@ function update_views(int $post_id)
 
 function author($user)
 {
-	$name = $user['name'] ?? '@'.$user['username'];
+	$name = $user['name'] ?? '@' . $user['username'];
 	if (isset($user['content']['entities'], $user['content']['html'])) {
 		$html = parse_entities($user['content']['html'], $user['content']['entities']['tags']);
 	} else {
@@ -188,12 +188,12 @@ function author($user)
 	}
 
 	echo '
-	<a href="/'.'@'.$user['username'].'"><img class="author-avatar" src="'.$user['content']['avatar_image']['url'].'?w=85&h=85" title="@'.$user['username'].'" style="width:85px;height:85px"/>
-	<span class="author-name" style="font-size:150%">'.$name.'</span></a>
+	<a href="/' . '@' . $user['username'] . '"><img class="author-avatar" src="' . $user['content']['avatar_image']['url'] . '?w=85&h=85" title="@' . $user['username'] . '" style="width:85px;height:85px"/>
+	<span class="author-name" style="font-size:150%">' . $name . '</span></a>
 
 	<div class="author-description" style="height:auto;border-bottom:1px dotted #ccc;padding:1.2em;margin-bottom:1em">
-		'.$html.'
-		<p><a class="author-name" href="https://pnut.io/@'.$user['username'].'" target="_blank">@'.$user['username'].' on Pnut</a></p>
+		' . $html . '
+		<p><a class="author-name" href="https://pnut.io/@' . $user['username'] . '" target="_blank">@' . $user['username'] . ' on Pnut</a></p>
 	</div>
 	';
 }
@@ -228,7 +228,7 @@ function rel_time(string $created_at, bool $full = false)
 	return $string ? implode(', ', $string) . ' ago' : 'just now';
 }
 
-function brief_author($longpost, bool $is_post=false)
+function brief_author($longpost, bool $is_post = false)
 {
 	if ($is_post) {
 		$created_at = $longpost['created_at'];
@@ -240,7 +240,7 @@ function brief_author($longpost, bool $is_post=false)
 	if (isset($longpost['user']['name'])) {
 		$name = $longpost['user']['name'];
 	} else {
-		$name = '@'.$longpost['user']['username'];
+		$name = '@' . $longpost['user']['username'];
 	}
 
 	if (isset($longpost['user']['content']['html'])) {
@@ -251,14 +251,14 @@ function brief_author($longpost, bool $is_post=false)
 
 	echo '
 	<div class="meta-top">
-		<p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\''.$longpost['id'].'\')"></a></p>
-		<a href="/'.'@'.$longpost['user']['username'].'"><img class="author-avatar" src="'.$longpost['user']['content']['avatar_image']['url'].'?w=45&h=45" title="@'.$longpost['user']['username'].'"/>
-		<span class="author-name">'.$name.'</span></a>
-		<p class="author-permalink" title="'.$created_at.'"><span class="author-tstamp tstamp">'.$rel_created_at.'</span></p>
+		<p class="author-toggle"><a class="author-button down" href="javascript:toggle_description(\'' . $longpost['id'] . '\')"></a></p>
+		<a href="/' . '@' . $longpost['user']['username'] . '"><img class="author-avatar" src="' . $longpost['user']['content']['avatar_image']['url'] . '?w=45&h=45" title="@' . $longpost['user']['username'] . '"/>
+		<span class="author-name">' . $name . '</span></a>
+		<p class="author-permalink" title="' . $created_at . '"><span class="author-tstamp tstamp">' . $rel_created_at . '</span></p>
 
 		<div class="author-description">
-			'.$html.'
-			<p><a class="author-name" href="https://pnut.io/@'.$longpost['user']['username'].'" target="_blank">@'.$longpost['user']['username'].' on Pnut</a></p>
+			' . $html . '
+			<p><a class="author-name" href="https://pnut.io/@' . $longpost['user']['username'] . '" target="_blank">@' . $longpost['user']['username'] . ' on Pnut</a></p>
 		</div>
 	</div>
 	';
@@ -270,26 +270,27 @@ function reply_content($reply)
 	echo '
 	<div class="reply">
 		<div class="reply-avatar" title="@' . $reply['user']['username'] . '">
-			<a href="/@'.$reply['user']['username'].'"><img src="'.$reply['user']['content']['avatar_image']['url'].'?w=45&h=45" width="45" height="45"/></a>
+			<a href="/@' . $reply['user']['username'] . '"><img src="' . $reply['user']['content']['avatar_image']['url'] . '?w=45&h=45" width="45" height="45"/></a>
 		</div>
 
 		<div class="reply-text-area">
 			<div class="reply-username">
-				<a href="/@'.$reply['user']['username'].'">@'.$reply['user']['username'].'</a>
+				<a href="/@' . $reply['user']['username'] . '">@' . $reply['user']['username'] . '</a>
 			</div>
 
 			<div class="reply-html">
-				'.$html.'
+				' . $html . '
 			</div>
 		</div>
 	</div>
 	';
 }
 
-function longpost_p_preview($longpost, bool $include_author) {
+function longpost_p_preview($longpost, bool $include_author)
+{
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
-	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = '.$longpost['id']);
+	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = ' . $longpost['id']);
 	$sth->execute();
 	$views = $sth->fetch()[0];
 
@@ -311,13 +312,13 @@ function longpost_p_preview($longpost, bool $include_author) {
 		$body_preview = parse_entities($longpost['content']['html'], $longpost['content']['entities']['tags']);
 	} else {
 		$body_preview = '';
-		$preview_word_count = min(count($body_by_word),70)-1;
+		$preview_word_count = min(count($body_by_word), 70) - 1;
 		for ($n = 0; $n < $preview_word_count; $n++) {
-			$body_preview .= ' '.$body_by_word[$n];
+			$body_preview .= ' ' . $body_by_word[$n];
 		}
 
 		// parse markdown
-		$body_preview = $Parsedown->text($body_preview.'&#8230;');
+		$body_preview = $Parsedown->text($body_preview . '&#8230;');
 	}
 
 	// retrieve global post
@@ -331,7 +332,7 @@ function longpost_p_preview($longpost, bool $include_author) {
 			$discussion = ' · '.$views.' views · <span title="Has replies">Comments</span>';
 		}
 	} else {*/
-		$discussion = ' · '.$views.' views';
+	$discussion = ' · ' . $views . ' views';
 	//}
 	$rel_created_at = rel_time($longpost['created_at']);
 
@@ -344,22 +345,26 @@ function longpost_p_preview($longpost, bool $include_author) {
 
 	echo '
 
-	<div class="article" id="post-'.$longpost['id'].'">
-		<h2 class="title"><a href="/p/' . $longpost['id'].'">'.$title.'</a></h2>';
-		if ($include_author) {
-			echo brief_author($longpost);
-		} else {
-			echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'" title="'.$longpost['created_at'].'">'.$rel_created_at.'</a></p>';
-		}
-		echo '<div class="body">'.$body_preview.'</div>
+	<div class="article" id="post-' . $longpost['id'] . '">
+		<h2 class="title"><a href="/p/' . $longpost['id'] . '">' . $title . '</a></h2>';
+	if ($include_author) {
+		echo brief_author($longpost);
+	} else {
+		echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/' . $longpost['id'] . '" title="' . $longpost['created_at'] . '">' . $rel_created_at . '</a></p>';
+	}
+	echo '<div class="body">' . $body_preview . '</div>
 
-		<div class="meta-bottom"><a href="/p/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+		<div class="meta-bottom"><a href="/p/' . $longpost['id'] . '" class="article-more">Continue reading</a> · <span class="article-reading-time">' . $readingTime . ' min read</span>' . $discussion . '</div>
 	</div>
 
 	';
 }
 
-function longpost_preview($longpost, bool $include_author) {
+function longpost_preview($longpost, bool $include_author)
+{
+	if (!isset($longpost['recent_message']['raw']['st.longpo.content'])) {
+		return null;
+	}
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
 	$sth = $db->prepare('SELECT COUNT(*) FROM views WHERE post_id = :post_id');
@@ -380,13 +385,13 @@ function longpost_preview($longpost, bool $include_author) {
 		$body_preview = parse_entities($longpost['recent_message']['content']['html'], $longpost['recent_message']['content']['entities']['tags']);
 	} else {
 		$body_preview = '';
-		$preview_word_count = min(count($body_by_word),70)-1;
+		$preview_word_count = min(count($body_by_word), 70) - 1;
 		for ($n = 0; $n < $preview_word_count; $n++) {
-			$body_preview .= ' '.$body_by_word[$n];
+			$body_preview .= ' ' . $body_by_word[$n];
 		}
 
 		// parse markdown
-		$body_preview = $Parsedown->text($body_preview.'&#8230;');
+		$body_preview = $Parsedown->text($body_preview . '&#8230;');
 	}
 
 	// retrieve global post
@@ -400,22 +405,22 @@ function longpost_preview($longpost, bool $include_author) {
 			$discussion = ' · '.$views.' views · <span title="Has replies">Comments</span>';
 		}
 	} else {*/
-		$discussion = ' · '.$views.' views';
+	$discussion = ' · ' . $views . ' views';
 	//}
 	$rel_created_at = rel_time($longpost['recent_message']['created_at']);
 
 	echo '
 
-	<div class="article" id="post-'.$longpost['id'].'">
-		<h2 class="title"><a href="/' . $longpost['id'].'">'.htmlentities($longpost['raw']['st.longpo.post'][0]['title'], ENT_QUOTES).'</a></h2>';
-		if ($include_author) {
-			echo brief_author($longpost);
-		} else {
-			echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/'.$longpost['id'].'" title="' . $longpost['recent_message']['created_at'] . '">'.$rel_created_at.'</a></p>';
-		}
-		echo '<div class="body">'.$body_preview.'</div>
+	<div class="article" id="post-' . $longpost['id'] . '">
+		<h2 class="title"><a href="/' . $longpost['id'] . '">' . htmlentities($longpost['raw']['st.longpo.post'][0]['title'], ENT_QUOTES) . '</a></h2>';
+	if ($include_author) {
+		echo brief_author($longpost);
+	} else {
+		echo '<p class="author-permalink"><a class="author-tstamp tstamp" href="/' . $longpost['id'] . '" title="' . $longpost['recent_message']['created_at'] . '">' . $rel_created_at . '</a></p>';
+	}
+	echo '<div class="body">' . $body_preview . '</div>
 
-		<div class="meta-bottom"><a href="/'.$longpost['id'].'" class="article-more">Continue reading</a> · <span class="article-reading-time">'.$readingTime.' min read</span>'.$discussion.'</div>
+		<div class="meta-bottom"><a href="/' . $longpost['id'] . '" class="article-more">Continue reading</a> · <span class="article-reading-time">' . $readingTime . ' min read</span>' . $discussion . '</div>
 	</div>
 
 	';
@@ -426,7 +431,7 @@ function parse_entities(string $html, array $tags): string
 	// replace mentions
 	$html = preg_replace('/<span data-mention-id="\d+" data-mention-name="\w+" itemprop="mention">(@\w+)<\/span>/', '<a href="/$1">$1</a>', $html);
 	// replace tags
-	foreach($tags as $tag) {
+	foreach ($tags as $tag) {
 		$html = preg_replace('/<span data-tag-name="' . $tag['text'] . '" itemprop="tag">#(' . $tag['text'] . ')<\/span>/', '<a href="https://beta.pnut.io/tags/$1" target="_blank">#$1</a>', $html);
 	}
 
