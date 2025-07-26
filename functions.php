@@ -1,6 +1,6 @@
 ﻿<?php
 
-function get_slug(string $title)
+function get_slug(string $title): string
 {
 	$slug = preg_replace('/[^\pL\d-]/u', '', str_replace(['_', ' ', '&'], ['-', '-', 'and'], strtolower(trim($title))));
 	if (strlen($slug) > 150) {
@@ -15,7 +15,7 @@ function get_slug(string $title)
 	return $slug;
 }
 
-function entry_exists(string $title, int $user_id, $channel_id = false)
+function entry_exists(string $title, int $user_id, $channel_id = false): bool
 {
 	// Connect to db
 	$db = new PDO(DBHOST, DBUSER, DBPASS);
@@ -432,7 +432,7 @@ function parse_entities(string $html, array $tags): string
 	$html = preg_replace('/<span data-mention-id="\d+" data-mention-name="\w+" itemprop="mention">(@\w+)<\/span>/', '<a href="/$1">$1</a>', $html);
 	// replace tags
 	foreach ($tags as $tag) {
-		$html = preg_replace('/<span data-tag-name="' . $tag['text'] . '" itemprop="tag">#(' . $tag['text'] . ')<\/span>/', '<a href="https://beta.pnut.io/tags/$1" target="_blank">#$1</a>', $html);
+		$html = preg_replace('/<span data-tag-name="' . $tag['text'] . '" itemprop="tag">#(' . $tag['text'] . ')<\/span>/', '<a href="https://delta.pnut.io/tags/$1" target="_blank">#$1</a>', $html);
 	}
 
 	return $html;

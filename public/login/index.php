@@ -16,6 +16,7 @@ if (isset($_GET['rem'])) {
 		unset($_SESSION['rem']);
 	}
 	header('Location: '.URL);
+	exit;
 }
 
 $app = new phpnut\ezphpnut();
@@ -23,23 +24,23 @@ $app = new phpnut\ezphpnut();
 // check that the user is signed in
 if (isset($_SESSION['user'])) {
     header('Location: '.URL);
-} else {
-	$url = $app->getAuthUrl();
-	echo '<a href="'.$url.'"><h2>Sign in using Pnut</h2></a>';
-	if (isset($_SESSION['rem'])) {
-		echo 'Remember me <input type="checkbox" id="rem" value="1" checked/>';
-	} else {
-		echo 'Remember me <input type="checkbox" id="rem" value="2" />';
-	}
-	?>
-	<script>
-	document.getElementById('rem').onclick = function(e){
-		if (document.getElementById('rem').value=='1') {
-			window.location='?rem=2';
-		} else {
-			window.location='?rem=1';
-		};
-	}
-	</script>
-<?php
+    exit;
 }
+
+$url = $app->getAuthUrl();
+echo '<a href="'.$url.'"><h2>Sign in using Pnut</h2></a>';
+if (isset($_SESSION['rem'])) {
+	echo 'Remember me <input type="checkbox" id="rem" value="1" checked/>';
+} else {
+	echo 'Remember me <input type="checkbox" id="rem" value="2" />';
+}
+?>
+<script>
+document.getElementById('rem').onclick = function(e){
+	if (document.getElementById('rem').value=='1') {
+		window.location='?rem=2';
+	} else {
+		window.location='?rem=1';
+	};
+}
+</script>

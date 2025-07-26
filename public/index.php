@@ -17,21 +17,22 @@ if (isset($_GET['rem'])) {
 		unset($_SESSION['rem']);
 	}
 	header('Location: '.URL);
+    exit;
 }
 
 $app = new phpnut\ezphpnut();
 $login_url = $app->getAuthUrl();
 
 // if not logged in as user, use app for calls
-if (isset($_SESSION['logged_in'])) {
-    $app->getSession();
-    if (!isset($_SESSION['user'])) {
-        $_SESSION['user'] = $app->getUser();
-    }
-} else {
+if (!isset($_SESSION['logged_in'])) {
     // $app = new phpnut\phpnut(getenv('PNUT_CLIENT_ID'), getenv('PNUT_CLIENT_SECRET'));
     // $token = $app->getAppAccessToken();
     unset($_SESSION['user']);
+}
+
+$app->getSession();
+if (!isset($_SESSION['user'])) {
+    $_SESSION['user'] = $app->getUser();
 }
 
 // get post ID from URL

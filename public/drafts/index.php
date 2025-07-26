@@ -17,20 +17,22 @@ if (isset($_GET['rem'])) {
 		unset($_SESSION['rem']);
 	}
 	header('Location: '.URL);
+    exit;
 }
 
 $app = new phpnut\ezphpnut();
 $login_url = $app->getAuthUrl();
 
 // if not logged in as user, use app for calls
-if (isset($_SESSION['logged_in'])) {
-    $app->getSession();
-    if (!isset($_SESSION['user'])) {
-        $_SESSION['user'] = $app->getUser();
-    }
-} else {
+if (!isset($_SESSION['logged_in'])) {
     unset($_SESSION['user']);
     header('location: '.URL);
+    exit;
+}
+
+$app->getSession();
+if (!isset($_SESSION['user'])) {
+    $_SESSION['user'] = $app->getUser();
 }
 
 $page_title = 'Long posts &ndash; Drafts';
